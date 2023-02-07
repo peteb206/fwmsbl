@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    table.display {
+        text-align: center;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $('table#fields').DataTable({
+            ajax: {
+                url: 'api/fields',
+                dataSrc: ''
+            },
+            columns: [
+                {
+                    data: 'name'
+                }, {
+                    data: 'address'
+                }, {
+                    data: 'link',
+                    // width: '50px',
+                    render: function (data, type) {
+                        return '<form method="GET" action="' + data + '" target="_blank"><button type="submit" class="btn btn-light"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16"><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg></button></form>'
+                    }
+                }
+            ],
+            paging: false,
+            ordering: false,
+            info: false,
+            scrollCollapse: true,
+            scrollY: ($(window).height() - 200) + 'px'
+        });
+    });
+</script>
+<div class="row justify-content-center">
+    <div class="col">
+        <table id="fields" class="display" style="width: 100%">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Map</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.css">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.js"></script>
+<script>
+    let filterTeams = function () {
+        // Remove teams
+        $('select#team')
+            .find('option[value!=""]')
+            .remove();
+
+        let league = $('select#league').val();
+        if (league) {
+            $.getJSON('api/teams?league=' + league, function (teams) {
+                $.each(teams, function (i, team) {
+                    // Add team
+                    $('select#team')
+                        .append(
+                            $("<option></option>")
+                                .attr("value", team.id)
+                                .text(team.name)
+                        );
+                });
+            });
+            $('div#team-wrapper').show();
+        } else {
+            $('div#team-wrapper').hide();
+        }
+        $('select#team').val('');
+    }
+
+    $(document).ready(function () {
+        $.getJSON('api/leagues', function (leagues) {
+            $.each(leagues, function (i, league) {
+                $('select#league')
+                    .append(
+                        $("<option></option>")
+                            .attr("value", league.id)
+                            .text(league.name)
+                    );
+            });
+        });
+        filterTeams();
+        buildCalendar();
+    });
+</script>
+<div class="row light-text pb-1">
+    <div class="col-sm pb-4">
+        <label for="league" class="form-label">League</label>
+        <select class="form-select" id="league" onchange="filterTeams(); buildCalendar();">
+            <option selected value="">All</option>
+        </select>
+    </div>
+    <div class="col-md pb-4">
+        <div id="team-wrapper">
+            <label for="team" class="form-label">Team</label>
+            <select class="form-select" id="team" onchange="buildCalendar();">
+                <option selected value="">All</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div id="calendar"></div>
+    </div>
+</div>
+{% endblock %}

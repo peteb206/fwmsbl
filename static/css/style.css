@@ -1,0 +1,137 @@
+:root {
+    --blue-color: #010b50;
+    --red-color: #fe0000;
+
+    /* Calendar */
+    --fc-neutral-bg-color: rgb(194, 194, 194);
+    --fc-button-bg-color: grey;
+    --fc-button-active-bg-color: var(--red-color);
+    --fc-button-hover-bg-color: var(--red-color);
+    --fc-today-bg-color: grey;
+    --fc-list-event-hover-bg-color: var(--blue-color) !important;
+
+    /* Button */
+    --bs-btn-hover-color: white;
+}
+
+body {
+    background-color: var(--blue-color);
+    padding-top: 80px;
+}
+
+.light-text {
+    color: white;
+}
+
+h3 {
+    padding-top: 50px;
+}
+
+/* Mobile vs. Desktop look */
+/* div#content-placeholder {
+    padding: 2%;
+} */
+
+/* Navbar */
+nav {
+    background-color: var(--blue-color);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.navbar-dark {
+    --bs-navbar-active-color: var(--red-color);
+    --bs-navbar-color: white;
+}
+
+.nav-item > a:hover {
+    color: var(--red-color);
+}
+
+.nav-item > a.active {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+}
+
+/* Hide short title by default (resolution > 541px) */
+span#abbreviated-title {
+    display: none;
+}
+
+/* When resolution <= 611px, hide full text and show short text */
+@media (max-width: 611px) {
+    span#abbreviated-title {
+        display: inline-block;
+    }
+    span#full-title {
+        display: none;
+    }
+}
+
+/* Home */
+form#contact-us div.row {
+    padding-bottom: 10px;
+}
+
+/* Calendar */
+.fc-list {
+    border: 0px !important;
+}
+
+.fc th a {
+    color: white;
+    text-decoration: none;
+}
+
+.fc td a {
+    color: white;
+    text-decoration: none;
+}
+
+.fc-list-table td {
+    background-color: var(--blue-color);
+    color: white;
+}
+
+.fc-list-table th a {
+    color: var(--blue-color);
+    text-decoration: none;
+}
+
+.fc-list-table .fc-list-event:hover tr {
+    background-color: var(--blue-color);
+    color: white;
+}
+
+table.fc-scrollgrid td {
+    color: white;
+}
+
+div#announcements .fc-list-event-dot {
+    display: none;
+}
+
+/* Datatables */
+table.display {
+    color: white;
+}
+
+table.display thead {
+    background-color: var(--fc-neutral-bg-color);
+    color: var(--blue-color);
+}
+
+table.display tbody tr {
+    background-color: var(--blue-color) !important;
+}
+
+div.dataTables_filter {
+    color: white !important;
+    margin-bottom: 10px;
+}
+
+div.dataTables_filter input {
+    background-color: white !important;
+}

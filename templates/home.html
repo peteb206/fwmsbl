@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v15.0" nonce="3GqgnOG0"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.css">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.js"></script>
+<script>
+    $(document).ready(function () {
+        buildCalendar();
+
+        // var announcements = new FullCalendar.Calendar($('div#announcements')[0], {
+        //     timeZone: 'America/Chicago',
+        //     initialView: 'listYear',
+        //     headerToolbar: {
+        //         start: '',
+        //         center: '',
+        //         end: ''
+        //     },
+        //     events: 'api/announcements',
+        //     eventContent: function (info) {
+        //         return {
+        //             html: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 20"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg>&nbsp;' + info.event.title
+        //         }
+        //     },
+        //     displayEventTime: false,
+        //     windowResize: function (arg) { resizeCalendar($('div#announcements'), true) },
+        //     eventsSet: function (events) { resizeCalendar($('div#announcements'), true) }
+        // });
+
+        // announcements.render();
+    });
+</script>
+<div class="row justify-content-center">
+    <div class="col-md-auto">
+        <img src="{{ url_for('static', filename='img/FWMSBL1.jpeg') }}" width="100%" style="max-width: 1000px;">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md" style="max-width: 400px;">
+        <h3 class="light-text" style="padding-bottom: 20px">Announcements</h3>
+        <div id="announcements">
+            <div class="fb-page" data-href="https://www.facebook.com/profile.php?id=100057252866855" data-tabs="timeline" data-width="" data-height="" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
+                <blockquote cite="https://www.facebook.com/profile.php?id=100057252866855" class="fb-xfbml-parse-ignore">
+                    <a href="https://www.facebook.com/profile.php?id=100057252866855">Fort Worth Mens Senior Baseball League</a>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+    <div class="col-md">
+        <h3 class="light-text">This Week's Games</h3>
+        <div id="calendar"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md" style="max-width: 400px;">
+        <h3 class="light-text" style="padding-bottom: 20px">Player Waiver</h3>
+        <button type="submit" class="btn light-text mx-2" style="background-color: var(--red-color);" onclick="window.open('waiver', '_blank')">Fill Out Form</button>
+    </div>
+    <div class="col-md">
+        <h3 class="light-text" style="padding-bottom: 15px">Contact Us</h3>
+        <form id="contact-us" class="needs-validation light-text px-2">
+            <div class="row">
+                <div class="col">
+                    <label for="regarding" class="form-label">Regarding</label>
+                    <select class="form-select" id="regarding" required>
+                        <option value=""></option>
+                        <option value="org">Our Organization</option>
+                        <option value="site">Website</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <div class="invalid-feedback">
+                        Please select what your inquiry is regarding.
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label for="name" class="form-label"> Your Name (Optional)</label>
+                    <input type="text" class="form-control" id="name" value="">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label for="phone" class="form-label">Phone (Optional)</label>
+                    <input type="tel" class="form-control" id="phone" placeholder="XXX-XXX-XXXX">
+                    <div class="invalid-feedback">
+                        Please enter a valid phone number.
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label for="email" class="form-label">Email (Optional)</label>
+                    <input type="email" class="form-control" id="email" placeholder="you@example.com">
+                    <div class="invalid-feedback">
+                        Please enter a valid email address.
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label for="message">Message</label>
+                    <textarea class="form-control" id="message" rows="6" required></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button class="btn btn-primary btn-md mt-2" type="submit">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

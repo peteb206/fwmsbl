@@ -1,0 +1,399 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    h1, h4 {
+        text-align: center;
+    }
+
+    h1, h4 {
+        margin: 30px 0px 10px 0px;
+    }
+
+    div#rules li {
+        margin: 15px 0px;
+    }
+</style>
+<div id="rules" class="light-text">
+    <div class="row justify-content-center">
+        <div class="col-md-auto" style="max-width: 300px;">
+            <img src="{{ url_for('static', filename='img/FWMSBL4.jpeg') }}" width="100%">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h1>OFFICIAL RULES</h1>
+
+            <h4><u>AGE REQUIREMENTS</u></h4>
+            <ol type="I">
+                <li>All leagues are designed by age and are for those players of the minimum age by Dec. 31 in the year of play.
+                    <ol type="a">
+                        <li>For Fort Worth MSBL 25+ teams, players must have reached the age of 25 no later than the last day of the year in the season they are playing, 2 players may be under 25.</li>
+                        <li>Players under the age of 25 by the end of the year may not pitch.</li>
+                        <li>For Fort Worth MSBL 40+ teams, players must have attained the age of 40 no later than the final day of the year in the season they are playing, 2 players may be 38 by December 31st.</li>
+                        <li>Players under the age of 40 by end of the year may not pitch.</li>
+                        <li>A waiver may be obtained by the president on rare occasions to allow people to play that are very close to the age requirement of each division.</li>
+                    </ol>
+                </li>
+                <li>Players may "play down," that is players eligible for the 40+ league may play in the 25+ league, but younger players may not "play up" in the older divisions. Players may obtain a special waiver from the president if he deems it fair.</li>
+                <li>Managers are responsible for the proper application of age requirements when placing any player onto the team roster.
+                    <ol type="a">
+                        <li>Opposing managers may challenge a player at any time by requesting, through the manager, the player's membership number and ID.</li>
+                        <li>If the player does not produce them, the challenging manager may file a protest under the league's protest protocol.</li>
+                        <li>Protests shall be filed within 24 hours by email or phone or text to the respective league president or representative.</li>
+                    </ol>
+                </li>
+                <li>Ineligible players shall forfeit all payments and be ejected from the league. Responsible managers shall explain to the President the cause for the offense and face suspension or removal as manager.</li>
+            </ol>
+
+            <h4><u>ROSTERS AND TEAM FEES</u></h4>
+            <ol type="I">
+                <li>Team commitments and non-refundable deposits in an amount to be determined by league officials shall be given in check or money order at specified dates.</li>
+                <li>Team schedules and league baseballs shall not be provided to any team that fails to pay the entire League fee before the beginning of the season. Teams that have not paid their fee by the deadline are ineligible to play until the fee is paid.
+                    <ol type="a">
+                        <li>There is no guarantee to the number of games each team will play, every effort will be made to make up all postponements, but weather and other circumstances may dictate the number of games played.</li>
+                        <li>Not all teams are guaranteed to make the playoffs and playoff format may change due to the season ending date. No refunds will be issued because of loss of games.</li>
+                    </ol>
+                </li>
+                <li>Each registered team must have no fewer than 12 players on the roster to be eligible for league play.
+                    <ol type="a">
+                        <li>If a team cannot fill out its roster and it's deemed to be in the best interests of the league, the President may assign players from the remaining free-agent pool following the draft.</li>
+                    </ol>
+                </li>
+                <li>Roster additions and deletions shall be provided to the membership coordinator and may occur throughout the season. Players removed from any roster who have properly paid their fees may, at the discretion of the league president, be placed on a different team.</li>
+                <li>Only players on the final roster shall be eligible for post-season play and subject to the rules of post-season eligibility.
+                    <ol type="a">
+                        <li>Players must play in a minimum of 8 games for a team in the regular season to be eligible for postseason play with that team.</li>
+                        <li>Special circumstances such as medical may allow a player to play, if allowed by the president all other special cases shall be decided by a committee of no less than three.</li>
+                    </ol>
+                </li>
+                <li>Rosters must include each player's first and last name, shall be posted on the Internet statistics page used by the league.</li>
+                <li>All players should carry medical insurance as the league accepts no liability for injuries or deaths resulting from playing in the league including going to and coming from games, functions or meetings pertaining to the league.</li>
+            </ol>
+
+            <h4><u>WAIVER OF LIABILITY</u></h4>
+            <ol type="I">
+                <li>All players must sign a waiver of liability -- agreeing not to hold Fort Worth MSBL, its officers, directors, employees, and agents responsible for any injury, damage or loss resulting from participation in the Fort Worth MSBL or its activities -- to be eligible to participate in any league activity or game.
+                    <ol type="a">
+                        <li>Waivers must be signed online during registration before player can participate.</li>
+                        <li>A player may also temporarily sign a paper waiver in case of an emergency then later on sign one on the league website.</li>
+                    </ol>
+                </li>
+                <li>Waivers must include each player's name, date of birth, email, phone number, emergency contact and the name of the team for which they are committed to play.</li>
+                <li>Managers shall provide a copy of each player's signed waiver to the league President prior to that player participating in any game.</li>
+            </ol>
+
+            <h4><u>UNIFORMS AND EQUIPMENT</u></h4>
+            <ol type="I">
+                <li>All teams must have reasonable uniforms and be in full uniform by the first game of each season. Uniforms shall be consistent with the standards of Major or Minor League Baseball.
+                    <ol type="a">
+                        <li>Jersey numbers must be easily visible.</li>
+                        <li>Players must wear baseball cap while playing in the field.</li>
+                        <li>Team names can be duplicated in the league's different age groups but may not be duplicated in the same league.</li>
+                    </ol>
+                </li>
+                <li>All batters and runners must wear an approved batting helmet that includes a least one ear flap which, when the player is batting, faces the pitcher.
+                    <ol type="a">
+                        <li>Cracked helmets shall not be worn and must be removed at the direction and discretion of the home plate umpire.</li>
+                        <li>ALL base coaches MUST wear a batting helmet while attending the bases. This is mandated by National MSBL and our insurance carrier.</li>
+                    </ol>
+                </li>
+                <li>All catchers are required to wear complete catcher's equipment, including a protective "skull cap" and mask or a one-piece "goalie" mask when in the catcher's box.</li>
+                <li>Metal spikes are permitted.
+                    <ol type="a">
+                        <li>Molded spikes or turf shoes may be required by some fields, depending on playing surface.</li>
+                        <li>Molded spikes or turf shoes may be required for pitchers on fields with artificial mounds and standard playing surface.</li>
+                    </ol>
+                </li>
+                <li>Wood and wood-composite bats are required for all Fort Worth MSBL games without exception.</li>
+                <li>All children under 18 years of age MUST wear a batting helmet while in the dugout or any other portion of the playing field at all times. This is a requirement of National MSBL and our insurance carrier.
+                    <ol type="a">
+                        <li>Children under the age of 12 shall not be allowed in the dugout or on the field.</li>
+                        <li>No teams shall have a bat boy/girl under the age of 15.</li>
+                    </ol>
+                </li>
+            </ol>
+
+            <h4><u>BASEBALLS</u></h4>
+            <ol type="I">
+                <li>The President shall choose the official baseball to be used in league play prior to the start of each season.</li>
+                <li>Each team shall receive an allotment of three (3) dozen baseballs prior to their first game and they are to be used for the entire season.</li>
+                <li>Each team shall furnish the home plate umpire two (2) new and unused official baseballs prior to each game. Additional official, unused baseballs shall be provided as needed, divided evenly among both teams, at the discretion of the home plate umpire.</li>
+                <li>If a team runs out of new baseballs, used ones may be allowed at the discretion of the home plate umpire and both managers.</li>
+                <li>Remaining baseballs shall be divided evenly to each team upon the game's completion.</li>
+            </ol>
+
+            <h4><u>ALCOHOL AND SMOKING</u></h4>
+            <ol type="I">
+                <li>The consumption and use of drugs, alcohol and smoking tobacco products on the baseball fields, in the dugouts or anywhere on the grounds of private fields -- campus, parking lots, etc. -- is strictly prohibited. This is a "zero tolerance" policy and will be enforced.</li>
+                <li>Anyone violating this policy is subject to suspension for a first offense and ejection from the league for a subsequent violation.</li>
+                <li>Any team or player whose intentional violation of this policy results in the loss of any field for Fort Worth MSBL use shall be responsible for repaying all funds lost as a result and possible suspension from the league.</li>
+            </ol>
+
+            <h4><u>CODE OF CONDUCT</u></h4>
+            <ol type="I">
+                <li>All members of Fort Worth MSBL are expected to conduct themselves in an adult manner, free from abuse, attack or threat. Every member of the league is expected to uphold the highest levels of sportsmanship.</li>
+                <li>The following offenses are subject to immediate ejection from a game and suspension or expulsion from all league play pending a review by the league President and Disciplinary Committee:
+                    <ol type="a">
+                        <li>Laying a hand on, shoving, striking or threatening an umpire, player or spectator;</li>
+                        <li>Verbally attacking, threatening or abusing an umpire, player or spectator before, during or after a game.</li>
+                        <li>Managers and umpires MUST file a written report to the Executive Board within 48 hours of the incident.</li>
+                    </ol>
+                </li>
+                <li>Members of the league who refuse to abide by an umpire's decision shall be ejected and may be suspended from league play until review by the President and Disciplinary Committee.</li>
+                <li>All players and umpires shall keep in mind common rules of decency at the fields used by Fort Worth MSBL.</li>
+                <li>Players and umpires who change clothing in parking lots or other areas of public display shall not do so in a manner that may be viewed as offensive or objectionable to any reasonable person.</li>
+                <li>Ejections: All players and managers ejected from a game shall immediately gather their belongings from the dugout and leave the playing facility entirely within five (5) minutes. Play will resume at the discretion of the home plate umpire.
+                    <ol type="a">
+                        <li>Umpires shall file an ejection report with league officials detailing the reason and circumstances of the ejection.</li>
+                        <li>Ejected players and managers are subject to league discipline for flagrant or malicious acts leading to an ejection.</li>
+                        <li>Penalties for flagrant acts: First offense, one-game suspension; second offense, at least one-game suspension and $50 fine; third offense, ejection from league.</li>
+                        <li>Players deemed to be habitually ejected may be fined or suspended additional games by the league Disciplinary Committee.</li>
+                    </ol>
+                </li>
+            </ol>
+
+            <h4><u>SCHEDULES AND OFFICIAL GAMES</u></h4>
+            <ol type="I">
+                <li>Games shall be scheduled at times and locations determined by the Executive Officers.
+                    <ol type="a">
+                        <li>All games are limited to two hours and thirty minutes, with no new inning beginning after 10:00pm, time to be kept by the home plate umpire or his designer.</li>
+                        <li>Umpires shall give the official start time at the home plate meeting of the managers it should be estimated or called out at the first pitch of the game and written down by each team.</li>
+                        <li>No new inning may begin after time has expired unless the game is tied. If the game is tied there shall be one inning played or the game is called at 10:30pm. If it is a tie after the inning it shall stand.</li>
+                        <li>Innings already in progress after 10:00pm shall be completed.  If unable to be completed the game will be suspended and continued at a later date.
+                            <ol type="i">
+                                <li>The league reserves the right not to reschedule if the game has little or no bearing on the team’s standings.</li>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+                <li>No games subject to forfeiture shall be rescheduled.</li>
+                <li>Teams causing a delayed start shall revert to the Visiting team should it have been the scheduled Home squad.</li>
+                <li>Teams must be ready to play on time when at least eight (8) eligible roster players have arrived or borrowed. Opposing team must lend team an eighth defensive player in order to play the game.
+                    <ol type="a">
+                        <li>Teams shall not play with fewer than eight (8) players on the field at any point in the game.</li>
+                        <li>Umpires shall begin all games on time when both teams have an eligible number of players.</li>
+                        <li>Teams with eight (8) players that lose a player during the game for any reason shall have 15 minutes to add a pool player or the contest shall be stopped and declared a forfeit regardless of the score or inning.</li>
+                        <li>A team with eight (8) players shall leave the ninth batting position vacant and skipped without penalty.</li>
+                        <li>The ninth (9) position must be filled by an eligible roster player when he arrives.</li>
+                    </ol>
+                </li>
+                <li>A team with nine (9) or more players that loses a player in the lineup for any reason shall add a substitute from the bench or a pool player. If one is unavailable, the batting position shall be skipped over without penalty.
+                    <ol type="a">
+                        <li>The sole exception to this rule is for an ejected player. An ejected player's batting position shall be filled with a substitute or, if one is unavailable, the position shall be declared an out the first time the vacant spot is reached in the lineup. Thereafter it shall be passed over without penalty.</li>
+                    </ol>
+                </li>
+                <li>Delayed start times shall not affect the two hour and thirty-minute time clock except for unforeseen circumstances such as mechanical difficulties or weather.
+                    <ol type="a">
+                        <li>Delayed starts from weather shall be coordinated with home plate umpire.</li>
+                        <li>Delayed starts because of player shortage will be deducted from the game time.</li>
+                        <li>Start time and additional time played after 10:00pm shall be agreed upon by both coaches and home plate umpire.  </li>
+                    </ol>
+                </li>
+                <li>Post-season games must be played until a winner is declared.
+                    <ol type="a">
+                        <li>Post-season games called because of darkness or curfew shall be resumed at the next available date.</li>
+                        <li>Teams resuming a suspended game shall maintain the same lineups, new players shall be added to the end.</li>
+                    </ol>
+                </li>
+                <li>MERCY RULE: Any team leading by 12 or more runs after seven (7) complete innings shall be declared the winner and the game concluded.
+                    <ol type="a">
+                        <li>Teams may agree to end a game before the seventh inning if one team is behind by 15 runs in the 5th or 6th innings.</li>
+                    </ol>
+                </li>
+                <li>Rain Delays: League officials shall be responsible for determining whether a game shall be begin or called on account of poor weather.
+                    <ol type="a">
+                        <li>Once the game begins the discretion remains with the home plate umpire and the managers on delaying or calling a game.</li>
+                        <li>If both managers agree the game can be suspended and the umpires shall return the unpaid portion of their money to the teams.</li>
+                        <li>Managers must check the Fort Worth MSBL rain-out line if the weather is threatening, actively raining or it had rained the night before to determine whether scheduled games have been postponed or relocated to a different field or time.</li>
+                        <li>Games cancelled on account of rain shall be rescheduled at the end of season calendar.</li>
+                        <li>Late-season cancellations shall only be rescheduled if the game is necessary to determine playoff seeds.</li>
+                        <li>Partial games shall be picked up from the point at where they were stopped.</li>
+                        <li>Games called by rain shall become official and not rescheduled if the Home team is ahead after 4-1/2 innings or the Visiting team is ahead after 5 complete innings.</li>
+                        <li>All other rain shortened, or otherwise shortened games shall be resumed from where they were stopped.
+                            <ol type="i">
+                                <li>In the subsequent game teams shall duplicate their rosters and if a person is not there he shall be skipped over and all others will be added to the end of the lineup.</li>
+                                <li>Pitchers may re-enter the resumed game once but not in the first resumed inning if they were removed in that inning, they must wait until the next inning.</li>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+                <li>Darkness: Games called on account of darkness, due to lighting malfunction, shall be suspended and the game played on another date from the point it was stopped only if the outcome may alter the final standings or playoff positions.
+                    <ol type="a">
+                        <li>All playoff games called for darkness shall resume at the earliest convenient time to both teams at the discretion of the league.</li>
+                        <li>If the game cannot be rescheduled then a winner shall be declared based on the score of the previous fully completed inning of an official game. If that score is a tie then the game is declared a tie.</li>
+                        <li>Teams shall maintain the same lineups from the suspended game upon resuming play, with new players added to the end of the lineup.</li>
+                    </ol>
+                </li>
+            </ol>
+
+            <h4><u>HOME TEAM AND INFIELD PRACTICE</u></h4>
+            <ol type="I">
+                <li>The home team shall occupy the first base dugout, unless managers agree otherwise.</li>
+                <li>Subject to local field rules, the visiting team shall begin infield practice no later than 30 minutes prior to the official game time and limit the practice to 15 minutes. Infield practice is not guaranteed, and teams may be asked to begin without it to keep game times on schedule.</li>
+                <li>As time allows, home teams have the right to infield practice the final 15 minutes before game time regardless of whether the visiting team has practiced or has received its own 15 minutes.</li>
+            </ol>
+
+            <h4><u>FORFEITS</u></h4>
+            <ol type="I">
+                <li>Managers must contact a league official and the opposing manager when they know they will be unable to field a team for a particular game.</li>
+                <li>Teams unable to play a scheduled game shall forfeit the game. Forfeits shall be scored 12-6 to maintain run differentials.</li>
+                <li>Teams that forfeit two (2) games at any point of the season because it could not field the minimum number of players shall be forced to add another player to their roster or face immediate suspension.</li>
+                <li>A team that forfeits at least three (3) games in a season for any other reason -- unsportsmanlike conduct, etc. -- shall be ejected from the league immediately and in not entitled to a refund of any team funds.</li>
+            </ol>
+
+            <h4><u>NUMBER OF BATTERS AND LINEUPS</u></h4>
+            <ol type="I">
+                <li>There is no limit to the number of batters a team may list in its batting lineup. In the 25 and 40 league you must hit 10 batters if they are in uniform.</li>
+                <li>A team with only 9 eligible players in the dugout must place them all into the batting order.
+                    <ol type="a">
+                        <li>A team may bat fewer than 9 players if the opposing team has only eight (8) or nine (9) players in its dugout.</li>
+                        <li>A team that bats fewer than 9 players must add to their lineup as the opposing team adds players, matching their number until the 9th or 10th player minimum is reached.</li>
+                    </ol>
+                </li>
+                <li>Lineup cards must include all players eligible to play and in the dugout.</li>
+                <li>Batters may be added to the lineup at any time during a game, but only at the bottom of the order.
+                    <ol type="a">
+                        <li>Batters may be inserted in the middle of a lineup as a substitution.</li>
+                        <li>Substituted players may not return to the lineup, but may play defensively.</li>
+                    </ol>
+                </li>
+                <li>Managers may use the "A/B" rule.
+                    <ol type="a">
+                        <li>Any batting positions may use two batters in each position, designated "A" and "B."</li>
+                        <li>The two batters shall alternate at bats with "A" batting first and "B" batting the next time around.</li>
+                        <li>Substitutions of any "A/B" is allowed, but once "A/B" positions are declared they may not be eliminated.</li>
+                        <li>If one of the batters in an "A/B" setup is injured, ejected or otherwise leaves the game, the remaining player shall fill the position and bat normally.</li>
+                    </ol>
+                </li>
+            </ol>
+
+            <h4><u>DESIGNATED RUNNERS</u></h4>
+            <ol type="I">
+                <li>Each team is allowed two (2) designated non-runners per game and may be named before or during the game.
+                    <ol type="a">
+                        <li>Non-runners can run if they choose to and will not forfeit their rights for a designated runner in subsequent opportunities.</li>
+                        <li>Players who have designated runners do not have to touch first base on a walk or a hit by pitch. The designated runner can go straight to first base.</li>
+                    </ol>
+                </li>
+                <li>Pitchers and catchers are allowed designated runners at any time at the discretion of the manager.
+                    <ol type="a">
+                        <li>Only pitchers of record are allowed designated runners. A pitcher is the pitcher of record only when he has actively taken the mound and throws a pitch that counts.</li>
+                        <li>Relieved pitchers remain the pitcher of record until their substitute takes the mound and throws a pitch that counts. At that time, the relieved pitcher is no longer allowed a designated runner unless he is named as one of the two (2) allotted non-runner slots.</li>
+                        <li>Pitchers and catchers may choose to run at any time in the game.</li>
+                    </ol>
+                </li>
+                <li>Designated runners shall be the last recorded out in that inning. If there are no outs, the last recorded out from the previous inning shall be the runner.
+                    <ol type="a">
+                        <li>A strikeout shall be considered a recorded out and eligible as a designated runner.</li>
+                        <li>If the last recorded out is ineligible to run -- already on the bases, currently batting or on deck -- then the recorded out immediately prior to that shall be the designated runner.</li>
+                        <li>If no outs are yet recorded in a game, or the eligible number of designated runners is exhausted, the designated runner shall be the last batter in the batting order.</li>
+                    </ol>
+                </li>
+            </ol>
+
+            <h4><u>BASERUNNING</u></h4>
+            <ol type="I">
+                <li>All players must avoid collisions with a fielder who is in the act of making a play.</li>
+                <li>Runners who fail to avoid a fielder shall be automatically called out.</li>
+                <li>Runners must slide directly to a base -- not to the sides of a base -- or fall away opposite the fielder in order to avoid a collision. Failure to do so shall, at the discretion of the umpire, result in the runner being called out and the batter called out.</li>
+                <li>Home plate collisions must always be avoided.</li>
+                <li>Catchers may not stand up the line unless actively attempting to catch a thrown ball and must not block the base path.
+                    <ol type="a">
+                        <li>Catchers must not block the plate with his body or foot, but may use his mitt only.</li>
+                        <li>Catchers who illegally block the plate shall, at the discretion of the umpire, forfeit the play and the runner shall be called safe.</li>
+                        <li>Runners must not lower their shoulder to collide with a catcher or use excessive force or risk being called out.</li>
+                        <li>The umpire has the discretion to award a base to a runner who gives himself up to avoid a certain collision.</li>
+                        <li>Umpires may eject a player whose actions in a collision are deemed malicious.</li>
+                    </ol>
+                </li>
+            </ol>
+
+            <h4><u>SUBSTITUTIONS</u></h4>
+            <ol type="I">
+                <li>Managers may substitute defensive players without limitation except for the pitcher.</li>
+                <li>Pitchers may leave the game and may only return to pitch in a different inning.</li>
+                <li>A pitcher who has been removed from a game a second time is ineligible to return to that position in that game.</li>
+                <li>Players, except pitchers, may be substituted defensively without affecting their offensive status in the lineup.</li>
+                <li>Batters who are pinch-hit for may not return to the batting order but may continue to play defensive positions.</li>
+            </ol>
+
+            <h4><u>HIT BATSMAN</u></h4>
+            <ol type="I">
+                <li>A pitcher who hits four (4) batters in a game must be removed and cannot re-enter the game in that position.</li>
+            </ol>
+
+            <h4><u>FAKE TAGS</u></h4>
+            <ol type="I">
+                <li>Runners shall move up a base, at the declaration of the umpire, if an infielder makes a fake tag at any base with the intent of making a runner slide.
+                    <ol type="a">
+                        <li>Violators shall be warned on a first offense and ejected from the game for a subsequent offense.</li>
+                    </ol>
+                </li>
+            </ol>
+
+            <h4><u>ONLINE STATISTICS</u></h4>
+            <ol type="I">
+                <li>The Executive Board each year shall designate an Internet website where game statistics shall be kept and compiled for the season.</li>
+                <li>Managers shall post all required stats including pitching and batting stats. Although it is not a requirement, it is highly recommended in fairness to all the other teams to compile your team stats.</li>
+                <li>All managers or their designee shall be responsible for posting game and player statistics for their team onto the website by the Thursday of the week following the game.</li>
+                <li>Team statistics are subject to verification from time to time as deemed necessary.
+                    <ol type="a">
+                        <li>Verification shall be via the team's game book and that of an opposing team as needed.</li>
+                    </ol>
+                </li>
+            </ol>
+
+            <h4><u>PROFESSIONAL PLAYERS</u></h4>
+            <ol type="I">
+                <li>Players who have participated professionally in either the major or minor leagues are subject to the following limitations before they may play in Fort Worth MSBL games:
+                    <ol type="a">
+                        <li>40+ league, at least 5 years since professional play.</li>
+                        <li>25+ league, at least 2 years since professional play.</li>
+                    </ol>
+                </li>
+                <li>Independent baseball and Mexican leagues shall not be considered professional.</li>
+            </ol>
+
+            <h4><u>PAYMENTS TO UMPIRES</u></h4>
+            <ol type="I">
+                <li>Umpires must be paid in cash (or digital method agreed upon by manager and umpire) by team managers before the game begins. Each umpire shall be paid $75 at the home plate meeting.</li>
+                <li>If only one umpire is prepared at game time, he shall be paid $55 by each team at home plate.</li>
+                <li>Teams unable to pay an umpire at the beginning of a game must do so by the 4th inning or the contest will be stopped, and they will forfeit the game.
+                    <ol type="a">
+                        <li>A team that forfeits for not paying an umpire shall be suspended from all future games until the unpaid umpire from the forfeited game is compensated.</li>
+                    </ol>
+                </li>
+                <li>In the event of a forfeit, each umpire shall be paid $30 as a show-up fee, the total amount to be assumed by the forfeiting squad immediately.</li>
+            </ol>
+
+            <h4><u>PLAYOFFS AND LEAGUE TOURNAMENTS</u></h4>
+            <ol type="I">
+                <li>Playoffs shall begin following the end of the season at the earliest possible date.</li>
+                <li>Games shall follow the two hour and thirty minute time limits established in these rules and employed during the regular season, except for final contests.</li>
+                <li>All finals contests shall be a best-of-three series.  The two teams involved will decide on the format: Friday, Friday, Saturday, Friday with two 7-inning games on Saturday, etc… </li>
+                <li>Umpires shall receive $75 per playoff or championship game per usual standards.  </li>
+                <li>Bracket seeds shall be determined as follows:
+                    <ol type="a">
+                        <li>In the order of finish based on percentage points.</li>
+                        <li>Ties shall be broken in the following order, moving to the next if a tie remains:
+                            <ol type="i">
+                                <li>Head-to-head record</li>
+                                <li>Runs scored against average per game</li>
+                                <li>Runs scored against average vs. common opponents</li>
+                                <li>Coin toss</li>
+                            </ol>
+                        </li>
+                        <li>Ties with three or more teams shall be decided by runs scored against, then runs scored against common opponents.</li>
+                        <li>First place teams shall be seeded highest based on percentage points, followed by the remainder of the division in the order of points.</li>
+                    </ol>
+                </li>
+                <li>The team with the highest seed shall be the home team in any scheduled post-season game.</li>
+                <li>Only rostered players who appeared in a minimum of (8) regular season games for the team they are playing with in the playoffs.</li>
+                <li>Teams found to violate any rule within this subsection shall immediately forfeit the game and be subject to suspension for the remainder of the post-season.</li>
+                <li>All other regular season MSBL rules shall apply to post-season games unless superseded by a rule in this section.</li>
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}
