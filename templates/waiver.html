@@ -21,7 +21,7 @@
         $('body').css('padding-top', '20px');
     });
 </script>
-<form id="waiver" class="light-text">
+<form id="waiver" class="light-text" action="/waiver" method="POST" onsubmit="return formOnSubmit();">
     <div class="row justify-content-center">
         <div class="col-md-auto" style="max-width: 300px;">
             <img src="{{ url_for('static', filename='img/FWMSBL5.png') }}" width="100%">
@@ -30,8 +30,8 @@
     <h1 style="padding-top: 20px">WAIVER AND RELEASE OF LIABILITY – READ BEFORE SIGNING</h1>
     <p>In consideration of being allowed to participate in any way for the Men’s Senior Baseball League, Inc / Men’s
         Adult Baseball League, Inc. (MSBL/MABL) its related events and activities, I, <input type="text" id="name"
-            class="form-control" style="display: inline;" required>, the undersigned, acknowledge, appreciate, and agree
-        that:</p>
+           name="name" class="form-control" style="display: inline;" required>, the undersigned, acknowledge, appreciate, 
+           and agree that:</p>
     <ol>
         <li>The risk of injury from the activities involved in this program is significant, including the potential for
             permanent paralysis and death, and while particular skills, equipment, and personal discipline may reduce
@@ -54,27 +54,33 @@
     <div class="row">
         <div class="col-md-6">
             <label for="firstName" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="firstName" required>
+            <input type="text" class="form-control" id="firstName" name="firstName" required>
         </div>
         <div class="col-md-6">
             <label for="lastName" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="lastName" required>
+            <input type="text" class="form-control" id="lastName" name="lastName" required>
         </div>
-        <div class="col-12">
+    </div>
+    <div class="row">
+        <div class="col">
             <label for="localLeague" class="form-label">Local MSBL/MABL League Playing In</label>
-            <input type="text" class="form-control" id="localLeague" required>
+            <input type="text" class="form-control" id="localLeague" name="localLeague" required>
         </div>
+    </div>
+    <div class="row">
         <div class="col-md-6">
             <label for="dob" class="form-label">DOB</label>
-            <input type="date" class="form-control" id="dob" required>
+            <input type="date" class="form-control" id="dob" name="dob" required>
         </div>
         <div class="col-md-6">
             <label for="phone" class="form-label">Cellphone #</label>
-            <input type="tel" class="form-control" id="phone" required>
+            <input type="tel" class="form-control" id="phone" name="phone" required>
         </div>
-        <div class="col-12">
+    </div>
+    <div class="row">
+        <div class="col">
             <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" required>
+            <input type="email" class="form-control" id="email" name="email" required>
         </div>
     </div>
     <p>
@@ -98,16 +104,16 @@
         <div class="col-9">
             <div class="form-group">
                 <label class="form-label">I have never played any level of professional baseball</label>
-                <input type="checkbox" class="form-check-input" id="noProfessional">
+                <input type="checkbox" class="form-check-input" name="noProfessional" id="noProfessional">
             </div>
             <div class="form-group">
                 <label class="form-label">I have played professional baseball, last year played</label>
-                <input type="number" id="professionalLastYear" class="form-control"
+                <input type="number" id="professionalLastYear" name="professionalLastYear" class="form-control"
                     style="display: inline; width: 100px;">
             </div>
             <div class="form-group">
                 <label class="form-label">I have played professional baseball, highest level played</label>
-                <input type="text" id="professionalHighestLevel" class="form-control"
+                <input type="text" id="professionalHighestLevel" name="professionalHighestLevel" class="form-control"
                     style="display: inline; width: 200px;">
             </div>
         </div>

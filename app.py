@@ -1,14 +1,23 @@
 import pandas as pd
-from datetime import datetime, timedelta
-from flask import Flask, jsonify, request, render_template
+from datetime import timedelta
+import os
+from flask import Flask, jsonify, request, render_template, redirect
+from flask_mail import Mail, Message
+
 app = Flask(__name__)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASSWORD')
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
 
 # Data
 fields_df = pd.read_csv('data/fields.csv').fillna('')
 leagues_df = pd.read_csv('data/leagues.csv')
 teams_df = pd.read_csv('data/teams.csv')
 games_df = pd.read_csv('data/games.csv')
-announcements_df = pd.read_csv('data/announcements.csv')
+# announcements_df = pd.read_csv('data/announcements.csv')
 
 # Utils
 full_calendar_date_format = '%Y-%m-%dT%H:%M:%SZ'
@@ -70,14 +79,16 @@ def fields_api():
     field_id = request.args.get('id', type = int)
     field_name = request.args.get('name', type = str)
     df_filter = pd.Series([True for _ in range(len(fields_df.index))])
-    if field_id != None:
+    if field_id == None:
+        df_filter = fields_df['id'] > 0
+    else:
         # Filter by id
-        df_filter = leagues_df['id'] == field_id
+        df_filter = fields_df['id'] == field_id
     if field_name != None:
         # Filter by name
-        df_filter = df_filter & (leagues_df['name'] == field_name)
+        df_filter = df_filter & (fields_df['name'] == field_name)
     df = fields_df[df_filter].copy()
-    df['link'] = df.apply(lambda row: f'http://www.google.com/maps/place/{row["latitude"]},{row["longitude"]}', axis = 1)
+    df['link'] = df.apply(lambda row: f'https://www.google.com/maps/place/{row["latitude"]},{row["longitude"]}', axis = 1)
     return jsonify(df.to_dict(orient = 'records'))
 
 @app.route('/api/teams', methods = ['GET'])
@@ -99,11 +110,78 @@ def teams_api():
     df['league'] = df['league'].apply(lambda league: row_to_dict(leagues_df[leagues_df['id'] == league]))
     return jsonify(df.to_dict(orient = 'records'))
 
-@app.route('/api/announcements', methods = ['GET'])
-def announcements_api():
-    df = announcements_df.rename({'datetime': 'start', 'message': 'title'}, axis = 1)
-    df['start'].fillna(datetime.now().strftime(full_calendar_date_format), inplace = True)
-    return jsonify(df.to_dict(orient = 'records'))
+# @app.route('/api/announcements', methods = ['GET'])
+# def announcements_api():
+#     df = announcements_df.rename({'datetime': 'start', 'message': 'title'}, axis = 1)
+#     df['start'].fillna(datetime.now().strftime(full_calendar_date_format), inplace = True)
+#     return jsonify(df.to_dict(orient = 'records'))
+
+# Email
+@app.route('/contact', methods = ['POST'])
+def contact():
+    regarding = request.form.get('regarding', '')
+    name = request.form.get('name', '')
+    phone = request.form.get('phone', '')
+    email = request.form.get('email', '')
+    message = request.form.get('message', '')
+
+    msg = Message("Fort Worth Men's Senior Baseball League: Contact Us", sender = f'FWMSBL Website <{os.environ.get("EMAIL_USERNAME")}>', recipients = [os.environ.get('EMAIL_RECIPIENT')])
+    msg.html = f'''
+        <h2>Contact Us Submission</h2>
+        <b>Regarding:</b> {regarding}<br>
+        <b>Name:</b> {name}<br>
+        <b>Phone:</b> {phone}<br>
+        <b>Email:</b> {email}<br>
+        <b>Message:</b> {message}<br>
+    '''
+    mail.send(msg)
+    return redirect('/')
+
+@app.route('/freeAgent', methods = ['POST'])
+def free_agent():
+    name = request.form.get('name', '')
+    phone = request.form.get('phone', '')
+    email = request.form.get('email', '')
+
+    msg = Message("Fort Worth Men's Senior Baseball League: Free Agent", sender = f'FWMSBL Website <{os.environ.get("EMAIL_USERNAME")}>', recipients = [os.environ.get('EMAIL_RECIPIENT')])
+    msg.html = f'''
+        <h2>Free Agent Submission</h2>
+        <b>Name:</b> {name}<br>
+        <b>Phone:</b> {phone}<br>
+        <b>Email:</b> {email}<br>
+    '''
+    mail.send(msg)
+    return redirect('/')
+
+@app.route('/waiver', methods = ['POST'])
+def submit_waiver():
+    name = request.form.get('name', '')
+    first_name = request.form.get('firstName', '')
+    last_name = request.form.get('lastName', '')
+    local_league = request.form.get('localLeague', '')
+    dob = request.form.get('dob', '')
+    phone = request.form.get('phone', '')
+    email = request.form.get('email', '')
+    no_pro = request.form.get('noProfessional', '')
+    last_pro_year = request.form.get('professionalLastYear', '')
+    highest_level_played = request.form.get('professionalHighestLevel', '')
+
+    msg = Message(f"Fort Worth Men's Senior Baseball League: {name} Player Waiver", sender = f'FWMSBL Website <{os.environ.get("EMAIL_USERNAME")}>', recipients = [os.environ.get('EMAIL_RECIPIENT')])
+    msg.html = f'''
+        <h2>Player Waiver Submission</h2>
+        <b>Name:</b> {name}<br>
+        <b>First Name:</b> {first_name}<br>
+        <b>Last Name:</b> {last_name}<br>
+        <b>Local MSBL/MABL League Playing In:</b> {local_league}<br>
+        <b>Date of Birth:</b> {dob}<br>
+        <b>Phone:</b> {phone}<br>
+        <b>Email:</b> {email}<br>
+        <b>I have never played any level of professional baseball:</b> {no_pro == "on"}<br>
+        <b>I have played professional baseball, last year played:</b> {last_pro_year}<br>
+        <b>I have played professional baseball, highest level played:</b> {highest_level_played}<br>
+    '''
+    mail.send(msg)
+    return redirect('/waiver')
 
 # HTML
 @app.route('/schedule', methods = ['GET'])

@@ -39,11 +39,13 @@
 <div class="row">
     <div class="col-md" style="max-width: 400px;">
         <h3 class="light-text" style="padding-bottom: 20px">Announcements</h3>
-        <div id="announcements">
-            <div class="fb-page" data-href="https://www.facebook.com/profile.php?id=100057252866855" data-tabs="timeline" data-width="" data-height="" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
-                <blockquote cite="https://www.facebook.com/profile.php?id=100057252866855" class="fb-xfbml-parse-ignore">
-                    <a href="https://www.facebook.com/profile.php?id=100057252866855">Fort Worth Mens Senior Baseball League</a>
-                </blockquote>
+        <div class="row justify-content-center">
+            <div id="announcements" class="col-md-auto">
+                <div class="fb-page" data-href="https://www.facebook.com/profile.php?id=100057252866855" data-tabs="timeline" data-width="" data-height="" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
+                    <blockquote cite="https://www.facebook.com/profile.php?id=100057252866855" class="fb-xfbml-parse-ignore">
+                        <a href="https://www.facebook.com/profile.php?id=100057252866855">Fort Worth Mens Senior Baseball League</a>
+                    </blockquote>
+                </div>
             </div>
         </div>
     </div>
@@ -53,17 +55,57 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md" style="max-width: 400px;">
-        <h3 class="light-text" style="padding-bottom: 20px">Player Waiver</h3>
-        <button type="submit" class="btn light-text mx-2" style="background-color: var(--red-color);" onclick="window.open('waiver', '_blank')">Fill Out Form</button>
+    <div class="col-md" style="max-width: 500px;">
+        <div class="row">
+            <div class="col">
+                <h3 class="light-text" style="padding-bottom: 20px">Player Waiver</h3>
+                <button type="submit" class="btn light-text mx-2" style="background-color: var(--red-color);" onclick="window.open('waiver', '_blank')">Fill Out Form</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-10">
+                <h3 class="light-text" style="padding-bottom: 20px">Free Agent Player Sign Up</h3>
+                <form id="free-agent" class="needs-validation light-text px-2"  action="/freeAgent" method="POST" onsubmit="return formOnSubmit();">
+                    <div class="row">
+                        <div class="col">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="XXX-XXX-XXXX" required>
+                            <div class="invalid-feedback">
+                                Please enter a valid phone number.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+                            <div class="invalid-feedback">
+                                Please enter a valid email address.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-primary btn-md mt-2" type="submit">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
     <div class="col-md">
         <h3 class="light-text" style="padding-bottom: 15px">Contact Us</h3>
-        <form id="contact-us" class="needs-validation light-text px-2">
+        <form id="contact-us" class="needs-validation light-text px-2" action="/contact" method="POST" onsubmit="return formOnSubmit();">
             <div class="row">
                 <div class="col">
                     <label for="regarding" class="form-label">Regarding</label>
-                    <select class="form-select" id="regarding" required>
+                    <select class="form-select" id="regarding" name="regarding" required>
                         <option value=""></option>
                         <option value="org">Our Organization</option>
                         <option value="site">Website</option>
@@ -76,14 +118,14 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <label for="name" class="form-label"> Your Name (Optional)</label>
-                    <input type="text" class="form-control" id="name" value="">
+                    <label for="name" class="form-label">Your Name (Optional)</label>
+                    <input type="text" class="form-control" id="name" name="name">
                 </div>
             </div>
             <div class="row">
                 <div class="col">
                     <label for="phone" class="form-label">Phone (Optional)</label>
-                    <input type="tel" class="form-control" id="phone" placeholder="XXX-XXX-XXXX">
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="XXX-XXX-XXXX">
                     <div class="invalid-feedback">
                         Please enter a valid phone number.
                     </div>
@@ -92,7 +134,7 @@
             <div class="row">
                 <div class="col">
                     <label for="email" class="form-label">Email (Optional)</label>
-                    <input type="email" class="form-control" id="email" placeholder="you@example.com">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com">
                     <div class="invalid-feedback">
                         Please enter a valid email address.
                     </div>
@@ -101,7 +143,7 @@
             <div class="row">
                 <div class="col">
                     <label for="message">Message</label>
-                    <textarea class="form-control" id="message" rows="6" required></textarea>
+                    <textarea class="form-control" id="message" name="message" rows="6" required></textarea>
                 </div>
             </div>
             <div class="row">

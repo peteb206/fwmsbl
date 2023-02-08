@@ -71,7 +71,7 @@ span#abbreviated-title {
 }
 
 /* Home */
-form#contact-us div.row {
+form div.row {
     padding-bottom: 10px;
 }
 
@@ -109,9 +109,9 @@ table.fc-scrollgrid td {
     color: white;
 }
 
-div#announcements .fc-list-event-dot {
+/* div#announcements .fc-list-event-dot {
     display: none;
-}
+} */
 
 /* Datatables */
 table.display {
