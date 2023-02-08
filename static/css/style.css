@@ -109,6 +109,11 @@ table.fc-scrollgrid td {
     color: white;
 }
 
+.fc-daygrid-event {
+    white-space: normal !important;
+    align-items: normal !important;
+}
+
 /* div#announcements .fc-list-event-dot {
     display: none;
 } */

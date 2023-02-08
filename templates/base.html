@@ -48,11 +48,11 @@
 
             var calendar = new FullCalendar.Calendar($('div#calendar')[0], {
                 timeZone: 'America/Chicago',
-                initialView: 'listWeek',
+                initialView: canNavigate ? 'listMonth' : 'listWeek',
                 headerToolbar: {
                     start: canNavigate ? ('prev,next' + (mobile ? '' : ' today')) : '',
                     center: canNavigate ? 'title' : '',
-                    end: canNavigate ? (mobile ? 'today' : 'listWeek dayGridMonth,timeGridWeek,timeGridDay') : ''
+                    end: canNavigate ? (mobile ? 'today' : 'listMonth dayGridMonth,timeGridWeek,timeGridDay') : ''
                 },
                 buttonText: {
                     today: 'Today',

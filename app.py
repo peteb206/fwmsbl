@@ -57,7 +57,7 @@ def events_api():
     df['home'] = df['home'].apply(lambda home: row_to_dict(teams_df[teams_df['id'] == home]))
     df['league'] = df['league'].apply(lambda league: row_to_dict(leagues_df[leagues_df['id'] == league]))
     df['color'] = df['league'].apply(lambda league: league['color'])
-    df['title'] = df.apply(lambda row: f'{row["league"]["name"] + " - " if league_id == None else ""}{row["away"]["name"]} @ {row["home"]["name"]} ({row["field"]["name"]})', axis = 1) if len(df.index) > 0 else ''
+    df['title'] = df.apply(lambda row: f'{row["league"]["name"] + " - " if league_id == None else ""}{row["away"]["name"]} vs. {row["home"]["name"]} ({row["field"]["name"]})', axis = 1) if len(df.index) > 0 else ''
     return jsonify(df.to_dict(orient = 'records'))
 
 @app.route('/api/leagues', methods = ['GET'])
