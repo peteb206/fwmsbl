@@ -140,3 +140,8 @@ div.dataTables_filter {
 div.dataTables_filter input {
     background-color: white !important;
 }
+
+/* Forms */
+input#address {
+    display: none;
+}
