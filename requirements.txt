@@ -2,3 +2,5 @@ Flask==2.2.2
 pandas==1.4.4
 python-dotenv==0.21.0
 Flask-Mail==0.9.1
+gspread==5.7.1
+oauth2client==4.1.3
