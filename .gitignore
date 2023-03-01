@@ -11,3 +11,5 @@ venv/
 ENV/ 
 env.bak/ 
 venv.bak/ 
+code_test.ipynb
+fwmsbl-b4504ac3d899.json

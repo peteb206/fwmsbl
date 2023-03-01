@@ -1,6 +1,9 @@
 import pandas as pd
-from datetime import timedelta
+from datetime import datetime, timedelta
 import os
+import json
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 from flask import Flask, jsonify, request, render_template, redirect
 from flask_mail import Mail, Message
 
@@ -13,11 +16,40 @@ app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 
 # Data
-fields_df = pd.read_csv('data/fields.csv').fillna('')
-leagues_df = pd.read_csv('data/leagues.csv')
-teams_df = pd.read_csv('data/teams.csv')
-games_df = pd.read_csv('data/games.csv')
-# announcements_df = pd.read_csv('data/announcements.csv')
+def refresh_data() -> dict[str, gspread.Worksheet]:
+    print('Attempting to refresh app data')
+    client: gspread.Client = gspread.authorize(
+        ServiceAccountCredentials.from_json_keyfile_dict(
+            json.loads(os.environ['GOOGLE_CLOUD_API_KEY']),
+            [
+                'https://spreadsheets.google.com/feeds',
+                'https://www.googleapis.com/auth/drive'
+            ]
+        )
+    )
+    google_sheet = client.open_by_key('1TABdL_mWjF4RCfdDbqXYflaJzjOhveM5RdtyrkpHdGQ')
+    worksheet_dict = {
+        'leagues': google_sheet.get_worksheet_by_id(1586626557),
+        'teams': google_sheet.get_worksheet_by_id(931255258),
+        'games': google_sheet.get_worksheet_by_id(1416711061),
+        'fields': google_sheet.get_worksheet_by_id(1923145408)
+    }
+    print('Successfully refreshed app data')
+    return worksheet_dict
+
+def get_df(from_sheet: str) -> pd.DataFrame:
+    global app_data
+    df = pd.DataFrame()
+    try:
+        df = pd.DataFrame(app_data[from_sheet].get_all_records())
+    except Exception as e:
+        print(e)
+        try:
+            app_data = refresh_data()
+            df = pd.DataFrame(app_data[from_sheet].get_all_records())
+        except: 
+            print('Could not get data from the Google Sheet')
+    return df
 
 # Utils
 full_calendar_date_format = '%Y-%m-%dT%H:%M:%SZ'
@@ -26,95 +58,74 @@ def row_to_dict(row: pd.DataFrame) -> dict:
     list_of_dict = row.to_dict(orient = 'records')
     return list_of_dict[0] if len(list_of_dict) == 1 else dict()
 
+def format_game_result(game_data: pd.Series) -> str:
+    if (game_data['away_score'] in ['', None]) | (game_data['home_score'] in ['', None]):
+        return f'{game_data["away"]} vs. {game_data["home"]}'
+    elif int(game_data['home_score']) > int(game_data['away_score']):
+        return f'{game_data["home"]} beat {game_data["away"]} {game_data["home_score"]}-{game_data["away_score"]}'
+    elif int(game_data['home_score']) < int(game_data['away_score']):
+        return f'{game_data["away"]} beat {game_data["home"]} {game_data["away_score"]}-{game_data["home_score"]}'
+    else:
+        return f'{game_data["away"]} tied {game_data["home"]} {game_data["away_score"]}-{game_data["home_score"]}'
+
 # API
 @app.route('/api/events', methods = ['GET'])
 def events_api():
-    league_id = request.args.get('league', type = int)
-    team_id = request.args.get('team', type = int)
+    league = request.args.get('league', type = str)
+    team = request.args.get('team', type = str)
     start = request.args.get('start', type = str)
     end = request.args.get('end', type = str)
+
+    games_df = get_df('games')
     df_filter = pd.Series([True for _ in range(len(games_df.index))])
-    if league_id != None:
+    if league not in ['', None]:
         # Filter by league
-        df_filter = games_df['league'] == league_id
-    if team_id != None:
+        df_filter = games_df['league'] == league
+    if team not in ['', None]:
         # Filter by team
-        df_filter = df_filter & ((games_df['away'] == team_id) | (games_df['home'] == team_id))
+        df_filter = df_filter & ((games_df['away'] == team) | (games_df['home'] == team))
     df = games_df[df_filter].copy()
 
     # Handle dates
     df['start'] = pd.to_datetime(df['start'])
     df['end'] = df['start'].apply(lambda start: start + timedelta(hours = 3)) # Games last 3 hours
-    if (start != None) & (end != None):
+    if (start not in ['', None]) & (end not in ['', None]):
         # Filter by date
-        df_filter = df_filter & (df['start'] >= start) & (df['end'] <= end)
+        df_filter = df_filter & (df['start'] >= datetime.strptime(f'{start}Z', full_calendar_date_format)) & (df['end'] <= datetime.strptime(f'{end}Z', full_calendar_date_format))
     df['start'] = df['start'].dt.strftime(full_calendar_date_format)
     df['end'] = df['end'].dt.strftime(full_calendar_date_format)
 
     # Get supplemental data
-    df['field'] = df['field'].apply(lambda field: row_to_dict(fields_df[fields_df['id'] == field]))
-    df['away'] = df['away'].apply(lambda away: row_to_dict(teams_df[teams_df['id'] == away]))
-    df['home'] = df['home'].apply(lambda home: row_to_dict(teams_df[teams_df['id'] == home]))
-    df['league'] = df['league'].apply(lambda league: row_to_dict(leagues_df[leagues_df['id'] == league]))
-    df['color'] = df['league'].apply(lambda league: league['color'])
-    df['title'] = df.apply(lambda row: f'{row["league"]["name"] + " - " if league_id == None else ""}{row["away"]["name"]} vs. {row["home"]["name"]} ({row["field"]["name"]})', axis = 1) if len(df.index) > 0 else ''
+    df['field'] = df['field'].str.replace(r'^$', 'Location TBD', regex = True)
+    df = df.merge(get_df('leagues').rename({'name': 'league'}, axis = 1), how = 'left', on = 'league')
+    df['title'] = df.apply(lambda row: f'{row["league"] + " - " if league in ["", None] else ""}{format_game_result(row)} ({row["field"]})', axis = 1) if len(df.index) > 0 else ''
     return jsonify(df.to_dict(orient = 'records'))
 
 @app.route('/api/leagues', methods = ['GET'])
 def leagues_api():
-    league_id = request.args.get('id', type = int)
-    league_name = request.args.get('name', type = str)
-    df_filter = pd.Series([True for _ in range(len(leagues_df.index))])
-    if league_id != None:
-        # Filter by id
-        df_filter = leagues_df['id'] == league_id
-    if league_name != None:
-        # Filter by name
-        df_filter = df_filter & (leagues_df['name'] == league_name)
-    df = leagues_df[df_filter].copy()
-    return jsonify(df.to_dict(orient = 'records'))
+    return jsonify(get_df('leagues').to_dict(orient = 'records'))
 
 @app.route('/api/fields', methods = ['GET'])
 def fields_api():
-    field_id = request.args.get('id', type = int)
-    field_name = request.args.get('name', type = str)
-    df_filter = pd.Series([True for _ in range(len(fields_df.index))])
-    if field_id == None:
-        df_filter = fields_df['id'] > 0
-    else:
-        # Filter by id
-        df_filter = fields_df['id'] == field_id
-    if field_name != None:
-        # Filter by name
-        df_filter = df_filter & (fields_df['name'] == field_name)
-    df = fields_df[df_filter].copy()
+    df = get_df('fields')
     df['link'] = df.apply(lambda row: f'https://www.google.com/maps/place/{row["latitude"]},{row["longitude"]}', axis = 1)
     return jsonify(df.to_dict(orient = 'records'))
 
 @app.route('/api/teams', methods = ['GET'])
 def teams_api():
-    team_id = request.args.get('id', type = int)
-    league_id = request.args.get('league', type = int)
-    team_name = request.args.get('name', type = str)
-    df_filter = pd.Series([True for _ in range(len(teams_df.index))])
-    if team_id != None:
-        # Filter by id
-        df_filter = teams_df['id'] == team_id
-    if league_id != None:
-        # Filter by league
-        df_filter = df_filter & (teams_df['league'] == league_id)
-    if team_name != None:
-        # Filter by name
-        df_filter = df_filter & (teams_df['name'] == team_name)
-    df = teams_df[df_filter].copy()
-    df['league'] = df['league'].apply(lambda league: row_to_dict(leagues_df[leagues_df['id'] == league]))
-    return jsonify(df.to_dict(orient = 'records'))
+    league = request.args.get('league', type = str)
+    name = request.args.get('name', type = str)
 
-# @app.route('/api/announcements', methods = ['GET'])
-# def announcements_api():
-#     df = announcements_df.rename({'datetime': 'start', 'message': 'title'}, axis = 1)
-#     df['start'].fillna(datetime.now().strftime(full_calendar_date_format), inplace = True)
-#     return jsonify(df.to_dict(orient = 'records'))
+    teams_df = get_df('teams')
+    df_filter = pd.Series([True for _ in range(len(teams_df.index))])
+    if league not in ['', None]:
+        # Filter by league
+        df_filter = df_filter & (teams_df['league'] == league)
+    if name not in ['', None]:
+        # Filter by name
+        df_filter = df_filter & (teams_df['name'] == name)
+    df = teams_df[df_filter].copy()
+    return jsonify(df.to_dict(orient = 'records'))
 
 # Email
 @app.route('/contact', methods = ['POST'])

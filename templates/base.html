@@ -61,7 +61,7 @@
                     day: 'Day',
                     list: 'List'
                 },
-                events: 'api/events?league=' + league + '&team=' + team,
+                events: 'api/events?league=' + encodeURIComponent(league) + '&team=' + team,
                 displayEventEnd: false,
                 listDayFormat: {
                     month: 'long',

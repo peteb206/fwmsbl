@@ -12,13 +12,13 @@
 
         let league = $('select#league').val();
         if (league) {
-            $.getJSON('api/teams?league=' + league, function (teams) {
+            $.getJSON('api/teams?league=' + encodeURIComponent(league), function (teams) {
                 $.each(teams, function (i, team) {
                     // Add team
                     $('select#team')
                         .append(
                             $("<option></option>")
-                                .attr("value", team.id)
+                                .attr("value", team.name)
                                 .text(team.name)
                         );
                 });
@@ -36,7 +36,7 @@
                 $('select#league')
                     .append(
                         $("<option></option>")
-                            .attr("value", league.id)
+                            .attr("value", league.name)
                             .text(league.name)
                     );
             });
