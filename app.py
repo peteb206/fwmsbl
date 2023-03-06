@@ -153,6 +153,7 @@ def contact():
 @app.route('/freeAgent', methods = ['POST'])
 def free_agent():
     name = request.form.get('name', '')
+    age = request.form.get('age', '')
     phone = request.form.get('phone', '')
     email = request.form.get('email', '')
     send_test = request.form.get('address', '')
@@ -162,6 +163,7 @@ def free_agent():
         msg.html = f'''
             <h2>Free Agent Submission</h2>
             <b>Name:</b> {name}<br>
+            <b>Age:</b> {age}<br>
             <b>Phone:</b> {phone}<br>
             <b>Email:</b> {email}<br>
         '''
