@@ -141,6 +141,10 @@ div.dataTables_filter input {
     background-color: white !important;
 }
 
+table.display.no-footer {
+    border-bottom: 0px;
+}
+
 /* Forms */
 input#address {
     display: none;

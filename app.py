@@ -127,6 +127,36 @@ def teams_api():
     df = teams_df[df_filter].copy()
     return jsonify(df.to_dict(orient = 'records'))
 
+@app.route('/api/standings', methods = ['GET'])
+def standings_api():
+    league = request.args.get('league', type = str)
+
+    games_df, teams_df = get_df('games'), get_df('teams')
+    df_filter = (games_df['away_score'] != '') & (games_df['home_score'] != '')
+    if league not in ['', None]:
+        # Filter by league
+        df_filter = df_filter & (games_df['league'] == league)
+        teams_df = teams_df[teams_df['league'] == league]
+    df, standings_df, wlt = games_df[df_filter].copy(), None, ['W', 'L', 'T']
+    if len(df.index) == 0:
+        standings_df = teams_df.drop('league', axis = 1)
+        standings_df[wlt] = 0
+        standings_df['winPct'] = '.000'
+    else:
+        df['away_result'] = df.apply(lambda row: 'T' if row['away_score'] == row['home_score'] else 'W' if int(row['away_score']) > int(row['home_score']) else 'L', axis = 1)
+        df['home_result'] = df['away_result'].apply(lambda x: 'T' if x == 'T' else 'W' if x == 'L' else 'L')
+        away_home_df = pd.concat([
+            df.groupby(side)[f'{side}_result'].value_counts().unstack() for side in ['away', 'home']
+        ]).reset_index().rename({'index': 'name'}, axis = 1)
+        for col in wlt:
+            if col not in away_home_df.columns:
+                away_home_df[col] = 0
+        results_df = away_home_df.groupby('name')[wlt].sum()
+        results_df['winPct'] = results_df.apply(lambda row: '{:.3f}'.format((row['W'] + row['T'] / 2) / row.sum()).lstrip('0'), axis = 1)
+
+        standings_df = teams_df.merge(results_df.reset_index(), how = 'left', on = 'name').drop('league', axis = 1).sort_values(by = 'winPct', ascending = False)
+    return jsonify(standings_df.fillna(0).astype({'W': int, 'L': int, 'T': int}).to_dict(orient = 'records'))
+
 # Email
 @app.route('/contact', methods = ['POST'])
 def contact():

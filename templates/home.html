@@ -9,26 +9,63 @@
     $(document).ready(function () {
         buildCalendar();
 
-        // var announcements = new FullCalendar.Calendar($('div#announcements')[0], {
-        //     timeZone: 'America/Chicago',
-        //     initialView: 'listYear',
-        //     headerToolbar: {
-        //         start: '',
-        //         center: '',
-        //         end: ''
-        //     },
-        //     events: 'api/announcements',
-        //     eventContent: function (info) {
-        //         return {
-        //             html: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 20"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg>&nbsp;' + info.event.title
-        //         }
-        //     },
-        //     displayEventTime: false,
-        //     windowResize: function (arg) { resizeCalendar($('div#announcements'), true) },
-        //     eventsSet: function (events) { resizeCalendar($('div#announcements'), true) }
-        // });
+        // Standings
+        $.getJSON('api/leagues', function (leagues) {
+            $.each(leagues, function (i, league) {
+                $('div#standings')
+                    .append(
+                        $('<div></div>')
+                            .addClass('col-md')
+                            .append(
+                                $('<h5></h5>')
+                                    .addClass('light-text')
+                                    .css('text-align', 'center')
+                                    .append('<span style="background-color: ' + league.color + '; border-radius: 5px;">&nbsp;' + league.name + '&nbsp;</span>')
+                            )    
+                            .append(
+                                $('<table></table>')
+                                    .attr('league', league.name)
+                                    .addClass('display')
+                                    .css('width', '90%')
+                            )
+                    );
 
-        // announcements.render();
+                $('table[league="' + league.name + '"]').DataTable({
+                    ajax: {
+                        url: 'api/standings?league=' + encodeURIComponent(league.name),
+                        dataSrc: ''
+                    },
+                    columns: [
+                        {
+                            data: 'name',
+                            title: 'Name'
+                        }, {
+                            data: 'W',
+                            title: 'W'
+                        }, {
+                            data: 'L',
+                            title: 'L'
+                        }, {
+                            data: 'T',
+                            title: 'T'
+                        }, {
+                            data: 'winPct',
+                            title: 'W%'
+                        }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: [1, 2, 3, 4],
+                            className: 'dt-center'
+                        }
+                    ],
+                    paging: false,
+                    ordering: false,
+                    info: false,
+                    searching: false
+                });
+            });
+        });
     });
 </script>
 <div class="row justify-content-center">
@@ -39,7 +76,7 @@
 <div class="row">
     <div class="col-md" style="max-width: 400px;">
         <h3 class="light-text" style="padding-bottom: 20px">Announcements</h3>
-        <div class="row justify-content-center">
+        <div class="row">
             <div id="announcements" class="col-md-auto">
                 <div class="fb-page" data-href="https://www.facebook.com/profile.php?id=100057252866855" data-tabs="timeline" data-width="" data-height="" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
                     <blockquote cite="https://www.facebook.com/profile.php?id=100057252866855" class="fb-xfbml-parse-ignore">
@@ -53,6 +90,9 @@
         <h3 class="light-text">This Week's Games</h3>
         <div id="calendar"></div>
     </div>
+</div>
+<h3 class="light-text" style="padding-bottom: 20px">Standings</h3>
+<div id="standings" class="row">
 </div>
 <div class="row">
     <div class="col-md" style="max-width: 500px;">
