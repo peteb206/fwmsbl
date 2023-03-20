@@ -19,6 +19,21 @@
         $('div#nav-placeholder').hide();
         $('div#body-wrapper').css('max-width', '1200px');
         $('body').css('padding-top', '20px');
+
+        let teamSelect = $('select#team')
+        teamSelect.append(
+            $("<option></option>")
+                .attr("value", "")
+                .text("")
+        );
+        let teams = {{ teams|tojson }}
+        $.each(teams, function (i, team) {
+            teamSelect.append(
+                $("<option></option>")
+                    .attr("value", team.name)
+                    .text(team.name)
+            );
+        })
     });
 </script>
 <form id="waiver" class="light-text" action="/waiver" method="POST" onsubmit="return formOnSubmit();">
@@ -48,7 +63,7 @@
             damage to person or property associated with my presence or participation, WHETHER ARISING FROM THE
             NEGLIGENCE OF THE RELEASEES OR OTHERWISE, to the fullest extent permitted by law.</li>
     </ol>
-    <p>I HAVE READ THIS RELEASE OF LIABILITY AND ASSUMPTION OF RISK AGREEMENT , FULLY UNDERSTAND ITS TERMS, UNDERSTAND
+    <p>I HAVE READ THIS RELEASE OF LIABILITY AND ASSUMPTION OF RISK AGREEMENT, FULLY UNDERSTAND ITS TERMS, UNDERSTAND
         THAT I HAVE GIVEN UP SUBSTANTIAL RIGHTS BY SIGNING IT, AND SIGN IT FREELY AND VOLUNTARILY WITHOUT ANY
         INDUCEMENT.</p>
     <div class="row">
@@ -64,7 +79,7 @@
     <div class="row">
         <div class="col">
             <label for="localLeague" class="form-label">Local MSBL/MABL League Playing In</label>
-            <input type="text" class="form-control" id="localLeague" name="localLeague" required>
+            <input type="text" class="form-control" id="localLeague" name="localLeague" value="Fort Worth" required>
         </div>
     </div>
     <div class="row">
@@ -78,9 +93,13 @@
         </div>
     </div>
     <div class="row">
-        <div class="col">
+        <div class="col-md-6">
             <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="col-md-6">
+            <label for="team" class="form-label">Team</label>
+            <select class="form-control" style="margin-top: 9px;" id="team" name="team" required></select>
         </div>
     </div>
     <p>

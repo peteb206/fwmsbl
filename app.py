@@ -60,7 +60,12 @@ def row_to_dict(row: pd.DataFrame) -> dict:
 
 def format_game_result(game_data: pd.Series) -> str:
     if (game_data['team1_score'] in ['', None]) | (game_data['team2_score'] in ['', None]):
-        return f'{game_data["team1"]} vs. {game_data["team2"]}'
+        if game_data['team1'] == game_data['home']:
+            return ' @ '.join([game_data["team2"], game_data["team1"]])
+        elif  game_data['team2'] == game_data['home']:
+            return ' @ '.join([game_data["team1"], game_data["team2"]])
+        else: # No home team specified
+            return ' vs. '.join([game_data["team1"], game_data["team2"]])
     elif int(game_data['team2_score']) > int(game_data['team1_score']):
         return f'{game_data["team2"]} beat {game_data["team1"]} {game_data["team2_score"]}-{game_data["team1_score"]}'
     elif int(game_data['team2_score']) < int(game_data['team1_score']):
@@ -96,10 +101,10 @@ def events_api():
     df['end'] = df['end'].dt.strftime(full_calendar_date_format)
 
     # Get supplemental data
-    df['field'] = df['field'].str.replace(r'^$', 'Location TBD', regex = True)
+    df = df.merge(get_df('fields').rename({'name': 'field'}, axis = 1), how = 'left', on = 'field').fillna({'field': 'Location TBD'})
     df = df.merge(get_df('leagues').rename({'name': 'league'}, axis = 1), how = 'left', on = 'league')
-    df['title'] = df.apply(lambda row: f'{row["league"] + " - " if league in ["", None] else ""}{format_game_result(row)} ({row["field"]})', axis = 1) if len(df.index) > 0 else ''
-    return jsonify(df.to_dict(orient = 'records'))
+    df['title'] = df.apply(lambda row: f'{row["league"] + " | " if league in ["", None] else ""}{format_game_result(row)}', axis = 1) if len(df.index) > 0 else ''
+    return jsonify(df.fillna('').to_dict(orient = 'records'))
 
 @app.route('/api/leagues', methods = ['GET'])
 def leagues_api():
@@ -126,6 +131,9 @@ def teams_api():
         df_filter = df_filter & (teams_df['name'] == name)
     df = teams_df[df_filter].copy()
     return jsonify(df.to_dict(orient = 'records'))
+
+def teams():
+    return get_df('teams').to_dict(orient = 'records')
 
 @app.route('/api/standings', methods = ['GET'])
 def standings_api():
@@ -209,6 +217,7 @@ def submit_waiver():
     dob = request.form.get('dob', '')
     phone = request.form.get('phone', '')
     email = request.form.get('email', '')
+    team = request.form.get('team', '')
     no_pro = request.form.get('noProfessional', '')
     last_pro_year = request.form.get('professionalLastYear', '')
     highest_level_played = request.form.get('professionalHighestLevel', '')
@@ -225,6 +234,7 @@ def submit_waiver():
             <b>Date of Birth:</b> {dob}<br>
             <b>Phone:</b> {phone}<br>
             <b>Email:</b> {email}<br>
+            <b>Team:</b> {team}<br>
             <b>I have never played any level of professional baseball:</b> {no_pro == "on"}<br>
             <b>I have played professional baseball, last year played:</b> {last_pro_year}<br>
             <b>I have played professional baseball, highest level played:</b> {highest_level_played}<br>
@@ -251,7 +261,7 @@ def fields():
 
 @app.route('/waiver', methods = ['GET'])
 def waiver():
-    return render_template('waiver.html')
+    return render_template('waiver.html', teams = teams())
 
 @app.route('/', methods = ['GET'])
 def home():

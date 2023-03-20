@@ -39,6 +39,42 @@
             setTimeout(function() {}, 2000);
         }
 
+        // Google Maps
+        let mapsButton = function (title, latitude, longitude) {
+            return $('<form></form')
+                .attr('method', "GET")
+                .attr('action', 'https://www.google.com/maps/place/' + latitude + ',' + longitude)
+                .attr('target', "_blank")
+                .css('display', 'inline')
+                .append(
+                    $('<button></button>')
+                        .attr('type', "submit")
+                        .addClass('btn')
+                        .addClass('btn-secondary')
+                        .addClass('btn-sm')
+                        .append(
+                            $('<svg></svg>')
+                            .attr('xmlns', "http://www.w3.org/2000/svg")
+                            .attr('width', "16")
+                            .attr('height', "16")
+                            .attr('fill', "currentColor")
+                            .addClass("bi")
+                            .addClass("bi-geo-alt-fill")
+                            .attr('viewBox', "0 0 16 16")
+                            .append(
+                                $('<path></path>')
+                                .attr('d', "M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z")
+                            )
+                        )
+                        .append("&nbsp;")
+                        .append(
+                            $('<span></span>')
+                                .text(title)
+                        )
+                )
+                .prop('outerHTML');
+        }
+
         // Calendar
         let buildCalendar = function () {
             let mobile = isMobile();
@@ -73,8 +109,13 @@
                 },
                 windowResize: function (arg) { resizeCalendar($('div#calendar'), !canNavigate) },
                 eventsSet: function (events) { resizeCalendar($('div#calendar'), !canNavigate) },
-                eventDidMount: function () {
-
+                eventDidMount: function () { },
+                eventContent: function( info ) {
+                    if (info.event.extendedProps.field) {
+                        return {html: info.event.title + '&nbsp;' + mapsButton(info.event.extendedProps.field, info.event.extendedProps.latitude, info.event.extendedProps.longitude)};
+                    } else {
+                        return {html: info.event.title};
+                    }
                 }
             });
 
