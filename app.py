@@ -59,14 +59,14 @@ def row_to_dict(row: pd.DataFrame) -> dict:
     return list_of_dict[0] if len(list_of_dict) == 1 else dict()
 
 def format_game_result(game_data: pd.Series) -> str:
-    if (game_data['away_score'] in ['', None]) | (game_data['home_score'] in ['', None]):
-        return f'{game_data["away"]} vs. {game_data["home"]}'
-    elif int(game_data['home_score']) > int(game_data['away_score']):
-        return f'{game_data["home"]} beat {game_data["away"]} {game_data["home_score"]}-{game_data["away_score"]}'
-    elif int(game_data['home_score']) < int(game_data['away_score']):
-        return f'{game_data["away"]} beat {game_data["home"]} {game_data["away_score"]}-{game_data["home_score"]}'
+    if (game_data['team1_score'] in ['', None]) | (game_data['team2_score'] in ['', None]):
+        return f'{game_data["team1"]} vs. {game_data["team2"]}'
+    elif int(game_data['team2_score']) > int(game_data['team1_score']):
+        return f'{game_data["team2"]} beat {game_data["team1"]} {game_data["team2_score"]}-{game_data["team1_score"]}'
+    elif int(game_data['team2_score']) < int(game_data['team1_score']):
+        return f'{game_data["team1"]} beat {game_data["team2"]} {game_data["team1_score"]}-{game_data["team2_score"]}'
     else:
-        return f'{game_data["away"]} tied {game_data["home"]} {game_data["away_score"]}-{game_data["home_score"]}'
+        return f'{game_data["team1"]} tied {game_data["team2"]} {game_data["team1_score"]}-{game_data["team2_score"]}'
 
 # API
 @app.route('/api/events', methods = ['GET'])
@@ -83,7 +83,7 @@ def events_api():
         df_filter = games_df['league'] == league
     if team not in ['', None]:
         # Filter by team
-        df_filter = df_filter & ((games_df['away'] == team) | (games_df['home'] == team))
+        df_filter = df_filter & ((games_df['team1'] == team) | (games_df['team2'] == team))
     df = games_df[df_filter].copy()
 
     # Handle dates
@@ -132,7 +132,7 @@ def standings_api():
     league = request.args.get('league', type = str)
 
     games_df, teams_df = get_df('games'), get_df('teams')
-    df_filter = (games_df['away_score'] != '') & (games_df['home_score'] != '')
+    df_filter = (games_df['team1_score'] != '') & (games_df['team2_score'] != '')
     if league not in ['', None]:
         # Filter by league
         df_filter = df_filter & (games_df['league'] == league)
@@ -143,10 +143,10 @@ def standings_api():
         standings_df[wlt] = 0
         standings_df['winPct'] = '.000'
     else:
-        df['away_result'] = df.apply(lambda row: 'T' if row['away_score'] == row['home_score'] else 'W' if int(row['away_score']) > int(row['home_score']) else 'L', axis = 1)
-        df['home_result'] = df['away_result'].apply(lambda x: 'T' if x == 'T' else 'W' if x == 'L' else 'L')
+        df['team1_result'] = df.apply(lambda row: 'T' if row['team1_score'] == row['team2_score'] else 'W' if int(row['team1_score']) > int(row['team2_score']) else 'L', axis = 1)
+        df['team2_result'] = df['team1_result'].apply(lambda x: 'T' if x == 'T' else 'W' if x == 'L' else 'L')
         away_home_df = pd.concat([
-            df.groupby(side)[f'{side}_result'].value_counts().unstack() for side in ['away', 'home']
+            df.groupby(side)[f'{side}_result'].value_counts().unstack() for side in ['team1', 'team2']
         ]).reset_index().rename({'index': 'name'}, axis = 1)
         for col in wlt:
             if col not in away_home_df.columns:
