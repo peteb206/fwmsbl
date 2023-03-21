@@ -31,6 +31,9 @@
             containerDiv.find('table.fc-list-table').each(function () {
                 containerDiv.height($(this).height() + containerDiv.find('div.fc-header-toolbar').height() + 24);
             });
+            if (listOnly) {
+                $('div.fc-header-toolbar').hide();
+            }
         }
 
         // Form
@@ -46,6 +49,7 @@
                 .attr('action', 'https://www.google.com/maps/place/' + latitude + ',' + longitude)
                 .attr('target', "_blank")
                 .css('display', 'inline')
+                .css('float', 'right')
                 .append(
                     $('<button></button>')
                         .attr('type', "submit")
@@ -66,7 +70,6 @@
                                 .attr('d', "M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z")
                             )
                         )
-                        .append("&nbsp;")
                         .append(
                             $('<span></span>')
                                 .text(title)
@@ -76,6 +79,8 @@
         }
 
         // Calendar
+        var allEvents = [];
+        var events = [];
         let buildCalendar = function () {
             let mobile = isMobile();
             let canNavigate = $('select#league').length;
@@ -97,7 +102,7 @@
                     day: 'Day',
                     list: 'List'
                 },
-                events: 'api/events?league=' + encodeURIComponent(league) + '&team=' + team,
+                events: events,
                 displayEventEnd: false,
                 listDayFormat: {
                     month: 'long',

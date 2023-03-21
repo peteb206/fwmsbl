@@ -74,96 +74,50 @@ def format_game_result(game_data: pd.Series) -> str:
         return f'{game_data["team1"]} tied {game_data["team2"]} {game_data["team1_score"]}-{game_data["team2_score"]}'
 
 # API
-@app.route('/api/events', methods = ['GET'])
-def events_api():
-    league = request.args.get('league', type = str)
-    team = request.args.get('team', type = str)
-    start = request.args.get('start', type = str)
-    end = request.args.get('end', type = str)
-
-    games_df = get_df('games')
-    df_filter = pd.Series([True for _ in range(len(games_df.index))])
-    if league not in ['', None]:
-        # Filter by league
-        df_filter = games_df['league'] == league
-    if team not in ['', None]:
-        # Filter by team
-        df_filter = df_filter & ((games_df['team1'] == team) | (games_df['team2'] == team))
-    df = games_df[df_filter].copy()
-
-    # Handle dates
+def events():
+    df = get_df('games')
     df['start'] = pd.to_datetime(df['start'])
     df['end'] = df['start'].apply(lambda start: start + timedelta(hours = 3)) # Games last 3 hours
-    if (start not in ['', None]) & (end not in ['', None]):
-        # Filter by date
-        df_filter = df_filter & (df['start'] >= datetime.strptime(f'{start}Z', full_calendar_date_format)) & (df['end'] <= datetime.strptime(f'{end}Z', full_calendar_date_format))
     df['start'] = df['start'].dt.strftime(full_calendar_date_format)
     df['end'] = df['end'].dt.strftime(full_calendar_date_format)
-
-    # Get supplemental data
-    df = df.merge(get_df('fields').rename({'name': 'field'}, axis = 1), how = 'left', on = 'field').fillna({'field': 'Location TBD'})
+    df = df.merge(get_df('fields').rename({'name': 'field'}, axis = 1), how = 'left', on = 'field')
     df = df.merge(get_df('leagues').rename({'name': 'league'}, axis = 1), how = 'left', on = 'league')
-    df['title'] = df.apply(lambda row: f'{row["league"] + " | " if league in ["", None] else ""}{format_game_result(row)}', axis = 1) if len(df.index) > 0 else ''
-    return jsonify(df.fillna('').to_dict(orient = 'records'))
+    df['title'] = df.apply(lambda row: format_game_result(row), axis = 1) if len(df.index) > 0 else ''
+    return df.fillna('').to_dict(orient = 'records')
 
-@app.route('/api/leagues', methods = ['GET'])
-def leagues_api():
-    return jsonify(get_df('leagues').to_dict(orient = 'records'))
+def leagues() -> list[dict]:
+    return get_df('leagues').to_dict(orient = 'records')
 
-@app.route('/api/fields', methods = ['GET'])
-def fields_api():
-    df = get_df('fields')
-    df['link'] = df.apply(lambda row: f'https://www.google.com/maps/place/{row["latitude"]},{row["longitude"]}', axis = 1)
-    return jsonify(df.to_dict(orient = 'records'))
-
-@app.route('/api/teams', methods = ['GET'])
-def teams_api():
-    league = request.args.get('league', type = str)
-    name = request.args.get('name', type = str)
-
-    teams_df = get_df('teams')
-    df_filter = pd.Series([True for _ in range(len(teams_df.index))])
-    if league not in ['', None]:
-        # Filter by league
-        df_filter = df_filter & (teams_df['league'] == league)
-    if name not in ['', None]:
-        # Filter by name
-        df_filter = df_filter & (teams_df['name'] == name)
-    df = teams_df[df_filter].copy()
-    return jsonify(df.to_dict(orient = 'records'))
-
-def teams():
+def teams() -> list[dict]:
     return get_df('teams').to_dict(orient = 'records')
 
-@app.route('/api/standings', methods = ['GET'])
-def standings_api():
-    league = request.args.get('league', type = str)
+def standings():
+    standings = dict()
+    games_df, leagues_df, teams_df = get_df('games'), get_df('leagues'), get_df('teams')
+    for league_dict in leagues_df.to_dict(orient = 'records'):
+        league = league_dict['name']
+        df = games_df[(games_df['team1_score'] != '') & (games_df['team2_score'] != '') & (games_df['league'] == league)]
+        league_teams_df = teams_df[teams_df['league'] == league]
+        standings_df, wlt = None, ['W', 'L', 'T']
+        if len(df.index) == 0:
+            standings_df = league_teams_df.drop('league', axis = 1)
+            standings_df[wlt] = 0
+            standings_df['winPct'] = '.000'
+        else:
+            df['team1_result'] = df.apply(lambda row: 'T' if row['team1_score'] == row['team2_score'] else 'W' if int(row['team1_score']) > int(row['team2_score']) else 'L', axis = 1)
+            df['team2_result'] = df['team1_result'].apply(lambda x: 'T' if x == 'T' else 'W' if x == 'L' else 'L')
+            away_home_df = pd.concat([
+                df.groupby(side)[f'{side}_result'].value_counts().unstack() for side in ['team1', 'team2']
+            ]).reset_index().rename({'index': 'name'}, axis = 1)
+            for col in wlt:
+                if col not in away_home_df.columns:
+                    away_home_df[col] = 0
+            results_df = away_home_df.groupby('name')[wlt].sum()
+            results_df['winPct'] = results_df.apply(lambda row: '{:.3f}'.format((row['W'] + row['T'] / 2) / row.sum()).lstrip('0'), axis = 1)
 
-    games_df, teams_df = get_df('games'), get_df('teams')
-    df_filter = (games_df['team1_score'] != '') & (games_df['team2_score'] != '')
-    if league not in ['', None]:
-        # Filter by league
-        df_filter = df_filter & (games_df['league'] == league)
-        teams_df = teams_df[teams_df['league'] == league]
-    df, standings_df, wlt = games_df[df_filter].copy(), None, ['W', 'L', 'T']
-    if len(df.index) == 0:
-        standings_df = teams_df.drop('league', axis = 1)
-        standings_df[wlt] = 0
-        standings_df['winPct'] = '.000'
-    else:
-        df['team1_result'] = df.apply(lambda row: 'T' if row['team1_score'] == row['team2_score'] else 'W' if int(row['team1_score']) > int(row['team2_score']) else 'L', axis = 1)
-        df['team2_result'] = df['team1_result'].apply(lambda x: 'T' if x == 'T' else 'W' if x == 'L' else 'L')
-        away_home_df = pd.concat([
-            df.groupby(side)[f'{side}_result'].value_counts().unstack() for side in ['team1', 'team2']
-        ]).reset_index().rename({'index': 'name'}, axis = 1)
-        for col in wlt:
-            if col not in away_home_df.columns:
-                away_home_df[col] = 0
-        results_df = away_home_df.groupby('name')[wlt].sum()
-        results_df['winPct'] = results_df.apply(lambda row: '{:.3f}'.format((row['W'] + row['T'] / 2) / row.sum()).lstrip('0'), axis = 1)
-
-        standings_df = teams_df.merge(results_df.reset_index(), how = 'left', on = 'name').drop('league', axis = 1).sort_values(by = 'winPct', ascending = False)
-    return jsonify(standings_df.fillna(0).astype({'W': int, 'L': int, 'T': int}).to_dict(orient = 'records'))
+            standings_df = league_teams_df.merge(results_df.reset_index(), how = 'left', on = 'name').drop('league', axis = 1).sort_values(by = 'winPct', ascending = False)
+        standings[league] = standings_df.fillna(0).astype({'W': int, 'L': int, 'T': int}).to_dict(orient = 'records')
+    return standings
 
 # Email
 @app.route('/contact', methods = ['POST'])
@@ -245,7 +199,7 @@ def submit_waiver():
 # HTML
 @app.route('/schedule', methods = ['GET'])
 def schedule():
-    return render_template('schedule.html')
+    return render_template('schedule.html', leagues = leagues(), teams = teams(), events = events())
 
 @app.route('/roster', methods = ['GET'])
 def roster():
@@ -257,7 +211,10 @@ def rules():
 
 @app.route('/fields', methods = ['GET'])
 def fields():
-    return render_template('fields.html')
+    df = get_df('fields')
+    df['link'] = df.apply(lambda row: f'https://www.google.com/maps/place/{row["latitude"]},{row["longitude"]}', axis = 1)
+    fields = df.to_dict(orient = 'records')
+    return render_template('fields.html', fields = fields)
 
 @app.route('/waiver', methods = ['GET'])
 def waiver():
@@ -265,4 +222,4 @@ def waiver():
 
 @app.route('/', methods = ['GET'])
 def home():
-    return render_template('home.html')
+    return render_template('home.html', leagues = leagues(), events = events(), standings = standings())

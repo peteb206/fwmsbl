@@ -7,12 +7,10 @@
     }
 </style>
 <script>
+    let fields = {{ fields|tojson }}
     $(document).ready(function () {
         $('table#fields').DataTable({
-            ajax: {
-                url: 'api/fields',
-                dataSrc: ''
-            },
+            data: fields,
             columns: [
                 {
                     data: 'name'

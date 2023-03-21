@@ -4,6 +4,11 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.css">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.js"></script>
 <script>
+    let leagues = {{ leagues|tojson }}
+    let teams = {{ teams|tojson }}
+    allEvents = {{ events|tojson }}
+    events = allEvents
+
     let filterTeams = function () {
         // Remove teams
         $('select#team')
@@ -12,8 +17,8 @@
 
         let league = $('select#league').val();
         if (league) {
-            $.getJSON('api/teams?league=' + encodeURIComponent(league), function (teams) {
-                $.each(teams, function (i, team) {
+            $.each(teams, function (i, team) {
+                if (team.league == league) {
                     // Add team
                     $('select#team')
                         .append(
@@ -21,25 +26,44 @@
                                 .attr("value", team.name)
                                 .text(team.name)
                         );
-                });
+                }
             });
+            $('div#legend-wrapper').hide();
             $('div#team-wrapper').show();
         } else {
             $('div#team-wrapper').hide();
+            $('div#legend-wrapper').show();
         }
         $('select#team').val('');
     }
 
+    let filterEvents = function() {
+        events = []
+        $.each(allEvents, function (i, event) {
+            let league = $('select#league').val();
+            let team = $('select#team').val();
+            if (league) {
+                if (team) {
+                    if (event.league == league && (event.team1 == team) || (event.team2 == team)) {
+                        events.push(event);
+                    }
+                } else if (event.league == league) {
+                    events.push(event);
+                }
+            } else {
+                events.push(event);
+            }
+        });
+    }
+
     $(document).ready(function () {
-        $.getJSON('api/leagues', function (leagues) {
-            $.each(leagues, function (i, league) {
-                $('select#league')
-                    .append(
-                        $("<option></option>")
-                            .attr("value", league.name)
-                            .text(league.name)
-                    );
-            });
+        $.each(leagues, function (i, league) {
+            $('select#league')
+                .append(
+                    $("<option></option>")
+                        .attr("value", league.name)
+                        .text(league.name)
+                );
         });
         filterTeams();
         buildCalendar();
@@ -48,20 +72,27 @@
 <div class="row light-text pb-1">
     <div class="col-sm pb-4">
         <label for="league" class="form-label">League</label>
-        <select class="form-select" id="league" onchange="filterTeams(); buildCalendar();">
+        <select class="form-select" id="league" onchange="filterTeams(); filterEvents(); buildCalendar();">
             <option selected value="">All</option>
         </select>
     </div>
     <div class="col-md pb-4">
         <div id="team-wrapper">
             <label for="team" class="form-label">Team</label>
-            <select class="form-select" id="team" onchange="buildCalendar();">
+            <select class="form-select" id="team" onchange="filterEvents(); buildCalendar();">
                 <option selected value="">All</option>
             </select>
         </div>
     </div>
 </div>
 <div class="row">
+    <div id="legend-wrapper" class="col-md">
+        {% for league in leagues %}
+            <span class="light-text" style="background-color: {{ league.color }}; border-radius: 5px; font-size: 1.25rem;">&nbsp;{{ league.name }}&nbsp;</span>&nbsp;
+        {% endfor %}
+    </div>
+</div>
+<div class="row" style="padding-top: 10px;">
     <div class="col">
         <div id="calendar"></div>
     </div>

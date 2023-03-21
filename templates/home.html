@@ -6,64 +6,65 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.css">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.js"></script>
 <script>
+    allEvents = {{ events|tojson }}
+    events = allEvents;
+    let leagues = {{ leagues|tojson }}
+    let standings = {{ standings|tojson }}
+
     $(document).ready(function () {
         buildCalendar();
 
         // Standings
-        $.getJSON('api/leagues', function (leagues) {
-            $.each(leagues, function (i, league) {
-                $('div#standings')
-                    .append(
-                        $('<div></div>')
-                            .addClass('col-md')
-                            .append(
-                                $('<h5></h5>')
-                                    .addClass('light-text')
-                                    .css('text-align', 'center')
-                                    .append('<span style="background-color: ' + league.color + '; border-radius: 5px;">&nbsp;' + league.name + '&nbsp;</span>')
-                            )    
-                            .append(
-                                $('<table></table>')
-                                    .attr('league', league.name)
-                                    .addClass('display')
-                                    .css('width', '90%')
-                            )
-                    );
+        $.each(leagues, function (i, league) {
+            $('div#standings')
+                .append(
+                    $('<div></div>')
+                        .addClass('col-md')
+                        .append(
+                            $('<h5></h5>')
+                                .addClass('light-text')
+                                .css('text-align', 'center')
+                                .css('padding-top', '10px')
+                                .append('<span style="background-color: ' + league.color + '; border-radius: 5px;">&nbsp;' + league.name + '&nbsp;</span>')
+                        )    
+                        .append(
+                            $('<table></table>')
+                                .attr('league', league.name)
+                                .addClass('display')
+                                .css('width', '90%')
+                        )
+                );
 
-                $('table[league="' + league.name + '"]').DataTable({
-                    ajax: {
-                        url: 'api/standings?league=' + encodeURIComponent(league.name),
-                        dataSrc: ''
-                    },
-                    columns: [
-                        {
-                            data: 'name',
-                            title: 'Name'
-                        }, {
-                            data: 'W',
-                            title: 'W'
-                        }, {
-                            data: 'L',
-                            title: 'L'
-                        }, {
-                            data: 'T',
-                            title: 'T'
-                        }, {
-                            data: 'winPct',
-                            title: 'W%'
-                        }
-                    ],
-                    columnDefs: [
-                        {
-                            targets: [1, 2, 3, 4],
-                            className: 'dt-center'
-                        }
-                    ],
-                    paging: false,
-                    ordering: false,
-                    info: false,
-                    searching: false
-                });
+            $('table[league="' + league.name + '"]').DataTable({
+                data: standings[league.name],
+                columns: [
+                    {
+                        data: 'name',
+                        title: 'Name'
+                    }, {
+                        data: 'W',
+                        title: 'W'
+                    }, {
+                        data: 'L',
+                        title: 'L'
+                    }, {
+                        data: 'T',
+                        title: 'T'
+                    }, {
+                        data: 'winPct',
+                        title: 'W%'
+                    }
+                ],
+                columnDefs: [
+                    {
+                        targets: [1, 2, 3, 4],
+                        className: 'dt-center'
+                    }
+                ],
+                paging: false,
+                ordering: false,
+                info: false,
+                searching: false
             });
         });
     });
@@ -88,10 +89,13 @@
     </div>
     <div class="col-md">
         <h3 class="light-text">This Week's Games</h3>
-        <div id="calendar"></div>
+        {% for league in leagues %}
+            <span class="light-text" style="background-color: {{ league.color }}; border-radius: 5px; font-size: 1.25rem;">&nbsp;{{ league.name }}&nbsp;</span>&nbsp;
+        {% endfor %}
+        <div id="calendar" style="padding-top: 10px"></div>
     </div>
 </div>
-<h3 class="light-text" style="padding-bottom: 20px">Standings</h3>
+<h3 class="light-text" style="padding-bottom: 10px">Standings</h3>
 <div id="standings" class="row">
 </div>
 <div class="row">
