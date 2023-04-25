@@ -107,7 +107,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-10">
+            <div class="col-11">
                 <h3 class="light-text" style="padding-bottom: 20px">Free Agent Player Sign Up</h3>
                 <form id="free-agent" class="needs-validation light-text px-2"  action="/freeAgent" method="POST" onsubmit="return formOnSubmit();">
                     <div class="row">
@@ -120,6 +120,59 @@
                         <div class="col">
                             <label for="age" class="form-label">Age</label>
                             <input type="number" id="age" name="age" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label class="form-label">Positions</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="pitcher" class="form-label">Pitcher</label>
+                                    <input type="checkbox" class="form-check-input" name="pitcher" id="pitcher">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="firstBase" class="form-label">First Base</label>
+                                    <input type="checkbox" class="form-check-input" name="firstBase" id="firstBase">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="thirdBase" class="form-label">Third Base</label>
+                                    <input type="checkbox" class="form-check-input" name="thirdBase" id="thirdBase">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="outfield" class="form-label">Outfield</label>
+                                    <input type="checkbox" class="form-check-input" name="outfield" id="outfield">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="catcher" class="form-label">Catcher</label>
+                                    <input type="checkbox" class="form-check-input" name="catcher" id="catcher">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="secondBase" class="form-label">Second Base</label>
+                                    <input type="checkbox" class="form-check-input" name="secondBase" id="secondBase">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="shortstop" class="form-label">Shortstop</label>
+                                    <input type="checkbox" class="form-check-input" name="shortstop" id="shortstop">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
