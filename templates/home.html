@@ -99,107 +99,18 @@
 <div id="standings" class="row">
 </div>
 <div class="row">
-    <div class="col-md" style="max-width: 500px;">
+    <div class="col-md">
         <div class="row">
             <div class="col">
-                <h3 class="light-text" style="padding-bottom: 20px">Player Waiver</h3>
-                <button type="submit" class="btn light-text mx-2" style="background-color: var(--red-color);" onclick="window.open('waiver', '_blank')">Fill Out Form</button>
+                <h3 class="light-text" style="padding-bottom: 20px">Forms</h3>
             </div>
         </div>
-        <div class="row">
-            <div class="col-11">
-                <h3 class="light-text" style="padding-bottom: 20px">Free Agent Player Sign Up</h3>
-                <form id="free-agent" class="needs-validation light-text px-2"  action="/freeAgent" method="POST" onsubmit="return formOnSubmit();">
-                    <div class="row">
-                        <div class="col">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <label for="age" class="form-label">Age</label>
-                            <input type="number" id="age" name="age" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <label class="form-label">Positions</label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="row">
-                                <div class="col">
-                                    <input type="checkbox" class="form-check-input" name="pitcher" id="pitcher">
-                                    <label for="pitcher" class="form-label">Pitcher</label>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <input type="checkbox" class="form-check-input" name="firstBase" id="firstBase">
-                                    <label for="firstBase" class="form-label">First Base</label>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <input type="checkbox" class="form-check-input" name="thirdBase" id="thirdBase">
-                                    <label for="thirdBase" class="form-label">Third Base</label>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <input type="checkbox" class="form-check-input" name="outfield" id="outfield">
-                                    <label for="outfield" class="form-label">Outfield</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="row">
-                                <div class="col">
-                                    <input type="checkbox" class="form-check-input" name="catcher" id="catcher">
-                                    <label for="catcher" class="form-label">Catcher</label>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <input type="checkbox" class="form-check-input" name="secondBase" id="secondBase">
-                                    <label for="secondBase" class="form-label">Second Base</label>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <input type="checkbox" class="form-check-input" name="shortstop" id="shortstop">
-                                    <label for="shortstop" class="form-label">Shortstop</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <label for="phone" class="form-label">Phone</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="XXX-XXX-XXXX" required>
-                            <div class="invalid-feedback">
-                                Please enter a valid phone number.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
-                            <div class="invalid-feedback">
-                                Please enter a valid email address.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <input type="text" class="form-control" id="address" name="address">
-                            <button class="btn btn-primary btn-md mt-2" type="submit">Submit</button>
-                        </div>
-                    </div>
-                </form>
+        <div class="row justify-content-start">
+            <div class="col" style="max-width: 150px;">
+                <button type="submit" class="btn light-text" style="background-color: var(--red-color);" onclick="window.open('waiver', '_blank')">Player Waiver</button>
+            </div>
+            <div class="col" style="max-width: 175px;">
+                <button type="submit" class="btn btn-light" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSfRuTtd9mr3BrPrDRdQKos92sFW2uqybJKahE8sP7URKvkWJw/viewform', '_blank')">Free Agent Form</button>
             </div>
         </div>
     </div>

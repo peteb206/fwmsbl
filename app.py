@@ -142,52 +142,6 @@ def contact():
         mail.send(msg)
     return redirect('/')
 
-@app.route('/freeAgent', methods = ['POST'])
-def free_agent():
-    name = request.form.get('name', '')
-    age = request.form.get('age', '')
-    pitcher = request.form.get('pitcher', '')
-    catcher = request.form.get('catcher', '')
-    first_base = request.form.get('firstBase', '')
-    second_base = request.form.get('secondBase', '')
-    third_base = request.form.get('thirdBase', '')
-    shortstop = request.form.get('shortstop', '')
-    outfield = request.form.get('outfield', '')
-    phone = request.form.get('phone', '')
-    email = request.form.get('email', '')
-    send_test = request.form.get('address', '')
-
-    positions = list()
-    if pitcher == 'on':
-        positions.append('P')
-    if catcher == 'on':
-        positions.append('C')
-    if first_base == 'on':
-        positions.append('1B')
-    if second_base == 'on':
-        positions.append('2B')
-    if third_base == 'on':
-        positions.append('3B')
-    if shortstop == 'on':
-        positions.append('SS')
-    if outfield == 'on':
-        positions.append('OF')
-    if len(positions) == 0:
-        positions = ['None selected']
-
-    if send_test == '':
-        msg = Message("Fort Worth Men's Senior Baseball League: Free Agent", sender = f'FWMSBL Website <{os.environ.get("EMAIL_USERNAME")}>', recipients = [os.environ.get('EMAIL_RECIPIENT')])
-        msg.html = f'''
-            <h2>Free Agent Submission</h2>
-            <b>Name:</b> {name}<br>
-            <b>Age:</b> {age}<br>
-            <b>Positions:</b> {', '.join(positions)}<br>
-            <b>Phone:</b> {phone}<br>
-            <b>Email:</b> {email}<br>
-        '''
-        mail.send(msg)
-    return redirect('/')
-
 @app.route('/waiver', methods = ['POST'])
 def submit_waiver():
     name = request.form.get('name', '')
