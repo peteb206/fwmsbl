@@ -83,7 +83,7 @@ def events():
     df = df.merge(get_df('fields').rename({'name': 'field'}, axis = 1), how = 'left', on = 'field')
     df = df.merge(get_df('leagues').rename({'name': 'league'}, axis = 1), how = 'left', on = 'league')
     df['title'] = df.apply(lambda row: format_game_result(row), axis = 1) if len(df.index) > 0 else ''
-    return df.fillna('').to_dict(orient = 'records')
+    return df.fillna('').query('(team1 != "") | (team2 != "")').to_dict(orient = 'records')
 
 def leagues() -> list[dict]:
     return get_df('leagues').to_dict(orient = 'records')
