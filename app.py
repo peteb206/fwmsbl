@@ -27,7 +27,7 @@ def refresh_data() -> dict[str, gspread.Worksheet]:
             ]
         )
     )
-    google_sheet = client.open_by_key('1TABdL_mWjF4RCfdDbqXYflaJzjOhveM5RdtyrkpHdGQ')
+    google_sheet = client.open_by_key('1BAJkmcYC_WtqZHU2UTXuHCOQGMOMYBrTOXBosSLNeTo')
     worksheet_dict = {
         'leagues': google_sheet.get_worksheet_by_id(1586626557),
         'teams': google_sheet.get_worksheet_by_id(931255258),
