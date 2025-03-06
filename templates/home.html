@@ -69,11 +69,13 @@
         });
     });
 </script>
+
 <div class="row justify-content-center">
     <div class="col-md-auto">
         <img src="{{ url_for('static', filename='img/FWMSBL1.jpeg') }}" width="100%" style="max-width: 1000px;">
     </div>
 </div>
+
 <div class="row">
     <div class="col-md" style="max-width: 400px;">
         <h3 class="light-text" style="padding-bottom: 20px">Announcements</h3>
@@ -95,29 +97,25 @@
         <div id="calendar" style="padding-top: 10px"></div>
     </div>
 </div>
+
 <h3 class="light-text" style="padding-bottom: 10px">Standings</h3>
 <div id="standings" class="row">
 </div>
+
 <div class="row">
-    <div class="col-md">
-        <div class="row">
-            <div class="col">
-                <h3 class="light-text" style="padding-bottom: 20px">Forms</h3>
-            </div>
-        </div>
-        <div class="row justify-content-start">
-            <div class="col" style="max-width: 125px;">
-                <button type="submit" class="btn btn-primary" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLScrlA5aCcuVoMaUpurES47ttyIftWFTt9R3gQfNfmO_9JgZkg/viewform', '_blank')">Contact Us</button>
-            </div>
-            <div class="col" style="max-width: 150px;">
-                <button type="submit" class="btn light-text" style="background-color: var(--red-color);" onclick="window.open('https://waiver.smartwaiver.com/w/cjdft38eyur6zsh5hngcsx/web/', '_blank')">Player Waiver</button>
-            </div>
-            <div class="col" style="max-width: 175px;">
-                <button type="submit" class="btn btn-light" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSfRuTtd9mr3BrPrDRdQKos92sFW2uqybJKahE8sP7URKvkWJw/viewform', '_blank')">Free Agent Form</button>
-            </div>
-        </div>
+    <div class="col">
+        <h3 class="light-text" style="padding-bottom: 20px">Forms</h3>
     </div>
-    <div class="col-md">
+</div>
+<div class="row justify-content-start" style="padding-bottom: 20px">
+    <div class="col" style="max-width: 132px;">
+        <button type="submit" class="btn btn-primary" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLScrlA5aCcuVoMaUpurES47ttyIftWFTt9R3gQfNfmO_9JgZkg/viewform', '_blank')">Contact Us</button>
+    </div>
+    <div class="col" style="max-width: 148px;">
+        <button type="submit" class="btn light-text" style="background-color: var(--red-color);" onclick="window.open('https://waiver.smartwaiver.com/w/cjdft38eyur6zsh5hngcsx/web/', '_blank')">Player Waiver</button>
+    </div>
+    <div class="col" style="max-width: 171px;">
+        <button type="submit" class="btn btn-light" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSfRuTtd9mr3BrPrDRdQKos92sFW2uqybJKahE8sP7URKvkWJw/viewform', '_blank')">Free Agent Form</button>
     </div>
 </div>
 {% endblock %}
