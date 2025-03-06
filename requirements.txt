@@ -1,5 +1,6 @@
 Flask==2.2.2
-pandas==1.4.4
+pandas==1.5.3
+numpy==1.26.4
 python-dotenv==0.21.0
 gspread==5.7.1
 oauth2client==4.1.3
