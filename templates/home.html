@@ -106,6 +106,9 @@
             </div>
         </div>
         <div class="row justify-content-start">
+            <div class="col" style="max-width: 125px;">
+                <button type="submit" class="btn btn-primary" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLScrlA5aCcuVoMaUpurES47ttyIftWFTt9R3gQfNfmO_9JgZkg/viewform', '_blank')">Contact Us</button>
+            </div>
             <div class="col" style="max-width: 150px;">
                 <button type="submit" class="btn light-text" style="background-color: var(--red-color);" onclick="window.open('https://waiver.smartwaiver.com/w/cjdft38eyur6zsh5hngcsx/web/', '_blank')">Player Waiver</button>
             </div>
@@ -115,59 +118,6 @@
         </div>
     </div>
     <div class="col-md">
-        <h3 class="light-text" style="padding-bottom: 15px">Contact Us</h3>
-        <form id="contact-us" class="needs-validation light-text px-2" action="/contact" method="POST" onsubmit="return formOnSubmit();">
-            <div class="row">
-                <div class="col">
-                    <label for="regarding" class="form-label">Regarding</label>
-                    <select class="form-select" id="regarding" name="regarding" required>
-                        <option value=""></option>
-                        <option value="org">Our Organization</option>
-                        <option value="site">Website</option>
-                        <option value="other">Other</option>
-                    </select>
-                    <div class="invalid-feedback">
-                        Please select what your inquiry is regarding.
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label for="name" class="form-label">Your Name (Optional)</label>
-                    <input type="text" class="form-control" id="name" name="name">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label for="phone" class="form-label">Phone (Optional)</label>
-                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="XXX-XXX-XXXX">
-                    <div class="invalid-feedback">
-                        Please enter a valid phone number.
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label for="email" class="form-label">Email (Optional)</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com">
-                    <div class="invalid-feedback">
-                        Please enter a valid email address.
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label for="message">Message</label>
-                    <textarea class="form-control" id="message" name="message" rows="6" required></textarea>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <input type="text" class="form-control" id="address" name="address">
-                    <button class="btn btn-primary btn-md mt-2" type="submit">Submit</button>
-                </div>
-            </div>
-        </form>
     </div>
 </div>
 {% endblock %}

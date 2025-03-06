@@ -5,15 +5,8 @@ import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from flask import Flask, jsonify, request, render_template, redirect
-from flask_mail import Mail, Message
 
 app = Flask(__name__)
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASSWORD')
-app.config['MAIL_USE_SSL'] = True
-mail = Mail(app)
 
 # Data
 def refresh_data() -> dict[str, gspread.Worksheet]:
@@ -118,63 +111,6 @@ def standings():
             standings_df = league_teams_df.merge(results_df.reset_index(), how = 'left', on = 'name').drop('league', axis = 1).sort_values(by = 'winPct', ascending = False)
         standings[league] = standings_df.fillna(0).astype({'W': int, 'L': int, 'T': int}).to_dict(orient = 'records')
     return standings
-
-# Email
-@app.route('/contact', methods = ['POST'])
-def contact():
-    regarding = request.form.get('regarding', '')
-    name = request.form.get('name', '')
-    phone = request.form.get('phone', '')
-    email = request.form.get('email', '')
-    message = request.form.get('message', '')
-    send_test = request.form.get('address', '')
-
-    if send_test == '':
-        msg = Message("Fort Worth Men's Senior Baseball League: Contact Us", sender = f'FWMSBL Website <{os.environ.get("EMAIL_USERNAME")}>', recipients = [os.environ.get('EMAIL_RECIPIENT')])
-        msg.html = f'''
-            <h2>Contact Us Submission</h2>
-            <b>Regarding:</b> {regarding}<br>
-            <b>Name:</b> {name}<br>
-            <b>Phone:</b> {phone}<br>
-            <b>Email:</b> {email}<br>
-            <b>Message:</b> {message}<br>
-        '''
-        mail.send(msg)
-    return redirect('/')
-
-@app.route('/waiver', methods = ['POST'])
-def submit_waiver():
-    name = request.form.get('name', '')
-    first_name = request.form.get('firstName', '')
-    last_name = request.form.get('lastName', '')
-    local_league = request.form.get('localLeague', '')
-    dob = request.form.get('dob', '')
-    phone = request.form.get('phone', '')
-    email = request.form.get('email', '')
-    team = request.form.get('team', '')
-    no_pro = request.form.get('noProfessional', '')
-    last_pro_year = request.form.get('professionalLastYear', '')
-    highest_level_played = request.form.get('professionalHighestLevel', '')
-    send_test = request.form.get('address', '')
-
-    if send_test == '':
-        msg = Message(f"Fort Worth Men's Senior Baseball League: {name} Player Waiver", sender = f'FWMSBL Website <{os.environ.get("EMAIL_USERNAME")}>', recipients = [os.environ.get('EMAIL_RECIPIENT')])
-        msg.html = f'''
-            <h2>Player Waiver Submission</h2>
-            <b>Name:</b> {name}<br>
-            <b>First Name:</b> {first_name}<br>
-            <b>Last Name:</b> {last_name}<br>
-            <b>Local MSBL/MABL League Playing In:</b> {local_league}<br>
-            <b>Date of Birth:</b> {dob}<br>
-            <b>Phone:</b> {phone}<br>
-            <b>Email:</b> {email}<br>
-            <b>Team:</b> {team}<br>
-            <b>I have never played any level of professional baseball:</b> {no_pro == "on"}<br>
-            <b>I have played professional baseball, last year played:</b> {last_pro_year}<br>
-            <b>I have played professional baseball, highest level played:</b> {highest_level_played}<br>
-        '''
-        mail.send(msg)
-    return redirect('/waiver')
 
 # HTML
 @app.route('/schedule', methods = ['GET'])
