@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<script src="https://kit.fontawesome.com/ad55694c33.js" crossorigin="anonymous"></script>
+
+<div class="row justify-content-around">
+    {% for sponsor in sponsors %}
+        <div class="col-4" style="text-align: center;">
+            <div style="padding: 10px;">
+                <a href = "{{ sponsor.link }}" target="_blank" style="color: white; font-size: 1.25rem;">
+                    <img width="100%" src="{{ url_for('static', filename='img/' + sponsor.logo_filename) }}">
+                    <br>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i><span> {{ sponsor.name }}</span>
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -25,7 +25,8 @@ def refresh_data() -> dict[str, gspread.Worksheet]:
         'leagues': google_sheet.get_worksheet_by_id(1586626557),
         'teams': google_sheet.get_worksheet_by_id(931255258),
         'games': google_sheet.get_worksheet_by_id(1416711061),
-        'fields': google_sheet.get_worksheet_by_id(1923145408)
+        'fields': google_sheet.get_worksheet_by_id(1923145408),
+        'sponsors': google_sheet.get_worksheet_by_id(377416456)
     }
     print('Successfully refreshed app data')
     return worksheet_dict
@@ -132,9 +133,11 @@ def fields():
     fields = df.to_dict(orient = 'records')
     return render_template('fields.html', fields = fields)
 
-@app.route('/waiver', methods = ['GET'])
-def waiver():
-    return render_template('waiver.html', teams = teams())
+@app.route('/sponsors', methods = ['GET'])
+def sponsors():
+    df = get_df('sponsors')
+    sponsors = df.to_dict(orient = 'records')
+    return render_template('sponsors.html', sponsors = sponsors)
 
 @app.route('/', methods = ['GET'])
 def home():
