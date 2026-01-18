@@ -7,6 +7,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from flask import Flask, jsonify, request, render_template, redirect
 
 app = Flask(__name__)
+app_data = None
 
 # Data
 def refresh_data() -> dict[str, gspread.Worksheet]:
@@ -20,11 +21,12 @@ def refresh_data() -> dict[str, gspread.Worksheet]:
             ]
         )
     )
-    google_sheet = client.open_by_key('1BAJkmcYC_WtqZHU2UTXuHCOQGMOMYBrTOXBosSLNeTo')
+    google_sheet = client.open_by_key('1S3xryeE_3ZrbpjTeT5_DGPPLNu5iQBSjvlhEtY1UTLI')
     worksheet_dict = {
         'leagues': google_sheet.get_worksheet_by_id(1586626557),
         'teams': google_sheet.get_worksheet_by_id(931255258),
         'games': google_sheet.get_worksheet_by_id(1416711061),
+        'practices': google_sheet.get_worksheet_by_id(353459939),
         'fields': google_sheet.get_worksheet_by_id(1923145408),
         'sponsors': google_sheet.get_worksheet_by_id(377416456)
     }
@@ -35,7 +37,12 @@ def get_df(from_sheet: str) -> pd.DataFrame:
     global app_data
     df = pd.DataFrame()
     try:
-        df = pd.DataFrame(app_data[from_sheet].get_all_records())
+        sheet_data = app_data[from_sheet].get_all_values()
+        sheet_columns = sheet_data[0]
+        sheet_values = list()
+        if len(sheet_data) > 1:
+            sheet_values = sheet_data[1:]
+        df = pd.DataFrame(sheet_values, columns = sheet_columns)
     except Exception as e:
         print(e)
         try:
@@ -68,16 +75,31 @@ def format_game_result(game_data: pd.Series) -> str:
         return f'{game_data["team1"]} tied {game_data["team2"]} {game_data["team1_score"]}-{game_data["team2_score"]}'
 
 # API
-def events():
-    df = get_df('games')
+def events(event_type: str = 'all'):
+    df = pd.concat(
+        [
+            get_df('games').assign(type = 'game'),
+            get_df('practices').assign(type = 'practice')
+        ],
+        ignore_index = True
+    )
+    if event_type in ['game', 'practice']:
+        df = df[df['type'] == event_type].copy()
+    if len(df.index) == 0:
+        return list()
     df['start'] = pd.to_datetime(df['start'])
-    df['end'] = df['start'].apply(lambda start: start + timedelta(hours = 3)) # Games last 3 hours
+    df['end'] = df.apply(lambda row: (row['start'] + timedelta(hours = 3)) if row['type'] == 'game' else pd.to_datetime(row['end']), axis = 1) # Games last 3 hours
     df['start'] = df['start'].dt.strftime(full_calendar_date_format)
     df['end'] = df['end'].dt.strftime(full_calendar_date_format)
     df = df.merge(get_df('fields').rename({'name': 'field'}, axis = 1), how = 'left', on = 'field')
-    df = df.merge(get_df('leagues').rename({'name': 'league'}, axis = 1), how = 'left', on = 'league')
-    df['title'] = df.apply(lambda row: format_game_result(row), axis = 1) if len(df.index) > 0 else ''
-    return df.fillna('').query('(team1 != "") | (team2 != "")').to_dict(orient = 'records')
+    df = df.merge(get_df('teams').rename({'name': 'team1'}, axis = 1)[['team1', 'league']], how = 'left', on = 'team1')
+    df['league'] = df.apply(lambda row: row['league_x'] if row['type'] == 'game' else row['league_y'], axis = 1)
+    df.fillna('', inplace = True)
+    df = df.drop(['league_x', 'league_y'], axis = 1).merge(get_df('leagues').rename({'name': 'league'}, axis = 1), how = 'left', on = 'league')
+    if len(df.index) > 0:
+        df['title'] = df.apply(lambda row: format_game_result(row) if row['type'] == 'game' else f'{row["team1"]} Practice' if row['team1'] != '' else 'Open Practice Slot', axis = 1)
+    print(df)
+    return df.to_dict(orient = 'records')
 
 def leagues() -> list[dict]:
     return get_df('leagues').to_dict(orient = 'records')
@@ -141,4 +163,4 @@ def sponsors():
 
 @app.route('/', methods = ['GET'])
 def home():
-    return render_template('home.html', leagues = leagues(), events = events(), standings = standings())
+    return render_template('home.html', leagues = leagues(), events = events(event_type = 'game'), standings = standings())
