@@ -163,4 +163,4 @@ def sponsors():
 
 @app.route('/', methods = ['GET'])
 def home():
-    return render_template('home.html', leagues = leagues(), events = events(event_type = 'game'), standings = standings())
+    return render_template('home.html', leagues = leagues(), events = events(), standings = standings())
