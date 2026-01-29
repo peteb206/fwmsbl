@@ -98,7 +98,6 @@ def events(event_type: str = 'all'):
     df = df.drop(['league_x', 'league_y'], axis = 1).merge(get_df('leagues').rename({'name': 'league'}, axis = 1), how = 'left', on = 'league')
     if len(df.index) > 0:
         df['title'] = df.apply(lambda row: format_game_result(row) if row['type'] == 'game' else f'{row["team1"]} Practice' if row['team1'] != '' else 'Open Practice Slot', axis = 1)
-    print(df)
     return df.to_dict(orient = 'records')
 
 def leagues() -> list[dict]:
