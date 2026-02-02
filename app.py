@@ -84,10 +84,11 @@ def events(event_type: str = 'all'):
         ignore_index = True
     )
     if event_type in ['game', 'practice']:
-        df = df[df['type'] == event_type].copy()
+        df = df[df['type'] == event_type]
+    df = df[df['date'].str.contains('2') & df['start'].str.contains('M')]
     if len(df.index) == 0:
         return list()
-    df['start'] = pd.to_datetime(df['start'])
+    df['start'] = pd.to_datetime(df['date'] + df['start'], format = '%m/%d/%Y%I:%M %p')
     df['end'] = df.apply(lambda row: (row['start'] + timedelta(hours = 3)) if row['type'] == 'game' else pd.to_datetime(row['end']), axis = 1) # Games last 3 hours
     df['start'] = df['start'].dt.strftime(full_calendar_date_format)
     df['end'] = df['end'].dt.strftime(full_calendar_date_format)
