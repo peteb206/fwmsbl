@@ -5,6 +5,7 @@
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v15.0" nonce="3GqgnOG0"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.css">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.js"></script>
+<script src="https://widgets.gc.com/static/js/sdk.v1.js"></script>
 <script>
     allEvents = {{ events|tojson }}
     events = allEvents;
@@ -16,6 +17,10 @@
 
         // Standings
         $.each(leagues, function (i, league) {
+            var gcId = 'gc-scoreboard-widget-pko9';
+            if (league.name == '25+ Division') {
+                gcId = 'gc-scoreboard-widget-8dvn';
+            }
             $('div#standings')
                 .append(
                     $('<div></div>')
@@ -32,6 +37,9 @@
                                 .attr('league', league.name)
                                 .addClass('display')
                                 .css('width', '90%')
+                        ).append(
+                            $('<div></div>')
+                                .attr('id', gcId)
                         )
                 );
 
@@ -66,6 +74,17 @@
                 info: false,
                 searching: false
             });
+        });
+
+        window.GC.scoreboard.init({
+            target: "#gc-scoreboard-widget-8dvn",
+            widgetId: "0cff62cf-ff97-4024-8e29-01851ef15cb1",
+            maxVerticalGamesVisible: 4,
+        });
+        window.GC.scoreboard.init({
+            target: "#gc-scoreboard-widget-pko9",
+            widgetId: "68b1b53b-499c-401c-8eb6-9a504d90d8d7",
+            maxVerticalGamesVisible: 4,
         });
     });
 </script>
