@@ -89,7 +89,7 @@ def events(event_type: str = 'all'):
     if len(df.index) == 0:
         return list()
     df['start'] = pd.to_datetime(df['date'] + df['start'], format = '%m/%d/%Y%I:%M %p')
-    df['end'] = df.apply(lambda row: (row['start'] + timedelta(hours = 3)) if row['type'] == 'game' else pd.to_datetime(row['end']), axis = 1) # Games last 3 hours
+    df['end'] = df.apply(lambda row: (row['start'] + timedelta(hours = 3)) if row['type'] == 'game' else pd.to_datetime(row['date'] + row['end'], format = '%m/%d/%Y%I:%M %p'), axis = 1) # Games last 3 hours
     df['start'] = df['start'].dt.strftime(full_calendar_date_format)
     df['end'] = df['end'].dt.strftime(full_calendar_date_format)
     df = df.merge(get_df('fields').rename({'name': 'field'}, axis = 1), how = 'left', on = 'field')
