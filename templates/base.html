@@ -36,12 +36,6 @@
             }
         }
 
-        // Form
-        let formOnSubmit = function (event) {
-            alert('Submission successful... thank you!');
-            setTimeout(function() {}, 2000);
-        }
-
         // Google Maps
         let mapsButton = function (title, latitude, longitude) {
             return $('<form></form')
@@ -102,7 +96,7 @@
                     day: 'Day',
                     list: 'List'
                 },
-                events: events,
+                events: events.filter(event => event.title != ''),
                 displayEventEnd: false,
                 listDayFormat: {
                     month: 'long',
@@ -116,8 +110,8 @@
                 eventsSet: function (events) { resizeCalendar($('div#calendar'), !canNavigate) },
                 eventDidMount: function () { },
                 eventContent: function( info ) {
-                    if (info.event.extendedProps.field) {
-                        return {html: info.event.title + '&nbsp;' + mapsButton(info.event.extendedProps.field, info.event.extendedProps.latitude, info.event.extendedProps.longitude)};
+                    if (info.event.extendedProps.field._id) {
+                        return {html: info.event.title + '&nbsp;' + mapsButton(info.event.extendedProps.field.name, info.event.extendedProps.field.latitude, info.event.extendedProps.field.longitude)};
                     } else {
                         return {html: info.event.title};
                     }

@@ -18,12 +18,12 @@
         let league = $('select#league').val();
         if (league) {
             $.each(teams, function (i, team) {
-                if (team.league == league) {
+                if (team.league._id == league) {
                     // Add team
                     $('select#team')
                         .append(
                             $("<option></option>")
-                                .attr("value", team.name)
+                                .attr("value", team._id)
                                 .text(team.name)
                         );
                 }
@@ -38,19 +38,23 @@
     }
 
     let filterEvents = function() {
+        let league = $('select#league').val();
+        let team = $('select#team').val();
         events = []
         $.each(allEvents, function (i, event) {
-            let league = $('select#league').val();
-            let team = $('select#team').val();
             if (league) {
-                if (team) {
-                    if (event.league == league && (event.team1 == team) || (event.team2 == team)) {
+                if (event.league._id == league) {
+                    if (team) {
+                        if (event.type == 'game' && (event.team1._id == team || event.team2._id == team)) {
+                            events.push(event);
+                        } else if (event.type == 'practice' && event.team._id == team) {
+                            events.push(event);
+                        }
+                    } else if (event.title != '') {
                         events.push(event);
                     }
-                } else if (event.league == league) {
-                    events.push(event);
                 }
-            } else {
+            } else if (event.title != '') {
                 events.push(event);
             }
         });
@@ -61,7 +65,7 @@
             $('select#league')
                 .append(
                     $("<option></option>")
-                        .attr("value", league.name)
+                        .attr("value", league._id)
                         .text(league.name)
                 );
         });

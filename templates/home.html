@@ -33,18 +33,35 @@
                                 .append('<span style="background-color: ' + league.color + '; border-radius: 5px;">&nbsp;' + league.name + '&nbsp;</span>')
                         )    
                         .append(
-                            $('<table></table>')
-                                .attr('league', league.name)
-                                .addClass('display')
-                                .css('width', '90%')
+                            $('<div></div>')
+                                .addClass('row')
+                                .addClass('mb-2')
+                                .append(
+                                    $('<div></div>')
+                                        .addClass('col')
+                                        .append(
+                                            $('<table></table>')
+                                                .attr('league', league._id)
+                                                .addClass('display')
+                                                .css('width', '90%')
+                                        )
+                            )
                         ).append(
                             $('<div></div>')
-                                .attr('id', gcId)
+                                .addClass('row')
+                                .append(
+                                    $('<div></div>')
+                                        .addClass('col')
+                                        .append(
+                                            $('<div></div>')
+                                                .attr('id', gcId)
+                                        )
+                                )
                         )
                 );
 
-            $('table[league="' + league.name + '"]').DataTable({
-                data: standings[league.name],
+            $('table[league="' + league._id + '"]').DataTable({
+                data: standings.filter(standingsLeague => standingsLeague._id == league._id)[0].teams,
                 columns: [
                     {
                         data: 'name',
@@ -90,8 +107,8 @@
 </script>
 
 <div class="row justify-content-center">
-    <div class="col-md-auto">
-        <img src="{{ url_for('static', filename='img/FWMSBL1.jpeg') }}" width="100%" style="max-width: 1000px;">
+    <div class="col-md-auto" style = "max-width: 700px;">
+        <img src="{{ url_for('static', filename='img/FWMSBL1.jpeg') }}" width="100%" >
     </div>
 </div>
 

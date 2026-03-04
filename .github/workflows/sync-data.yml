@@ -1,0 +1,27 @@
+name: sync-data
+on:
+   schedule:
+      - cron: '*/10 * * * *' # https://crontab.guru
+   workflow_dispatch:
+jobs:
+   build:
+      runs-on: ubuntu-latest
+      steps:
+         -  name: checkout repo content
+            uses: actions/checkout@v4 # checkout the repository content to github runner
+         -  name: setup python
+            uses: actions/setup-python@v5
+            with:
+               python-version: '3.11.2' # install the python version needed
+               cache: 'pip' # caching pip dependencies
+         -  name: install python packages
+            run: |
+               python -m pip install --upgrade pip
+               pip install -r requirements.txt
+         -  name: sync data from Google Sheet to MongoDB
+            env:
+               GOOGLE_CLOUD_API_KEY: ${{ secrets.GOOGLE_CLOUD_API_KEY }}
+               MONGO_DB_USERNAME: ${{ secrets.MONGO_DB_USERNAME }}
+               MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
+            run: |
+               python sync_data.py

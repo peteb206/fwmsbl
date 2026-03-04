@@ -1,144 +1,84 @@
-import pandas as pd
-from datetime import datetime, timedelta
-import os
-import json
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-from flask import Flask, jsonify, request, render_template, redirect
+from flask import Flask, render_template
+import query
 
 app = Flask(__name__)
-app_data = None
-
-# Data
-def refresh_data() -> dict[str, gspread.Worksheet]:
-    print('Attempting to refresh app data')
-    client: gspread.Client = gspread.authorize(
-        ServiceAccountCredentials.from_json_keyfile_dict(
-            json.loads(os.environ['GOOGLE_CLOUD_API_KEY']),
-            [
-                'https://spreadsheets.google.com/feeds',
-                'https://www.googleapis.com/auth/drive'
-            ]
-        )
-    )
-    google_sheet = client.open_by_key('1S3xryeE_3ZrbpjTeT5_DGPPLNu5iQBSjvlhEtY1UTLI')
-    worksheet_dict = {
-        'leagues': google_sheet.get_worksheet_by_id(1586626557),
-        'teams': google_sheet.get_worksheet_by_id(931255258),
-        'games': google_sheet.get_worksheet_by_id(1416711061),
-        'practices': google_sheet.get_worksheet_by_id(353459939),
-        'fields': google_sheet.get_worksheet_by_id(1923145408),
-        'sponsors': google_sheet.get_worksheet_by_id(377416456)
-    }
-    print('Successfully refreshed app data')
-    return worksheet_dict
-
-def get_df(from_sheet: str) -> pd.DataFrame:
-    global app_data
-    df = pd.DataFrame()
-    try:
-        sheet_data = app_data[from_sheet].get_all_values()
-        sheet_columns = sheet_data[0]
-        sheet_values = list()
-        if len(sheet_data) > 1:
-            sheet_values = sheet_data[1:]
-        df = pd.DataFrame(sheet_values, columns = sheet_columns)
-    except Exception as e:
-        print(e)
-        try:
-            app_data = refresh_data()
-            df = pd.DataFrame(app_data[from_sheet].get_all_records())
-        except: 
-            print('Could not get data from the Google Sheet')
-    return df
 
 # Utils
 full_calendar_date_format = '%Y-%m-%dT%H:%M:%SZ'
 
-def row_to_dict(row: pd.DataFrame) -> dict:
-    list_of_dict = row.to_dict(orient = 'records')
-    return list_of_dict[0] if len(list_of_dict) == 1 else dict()
-
-def format_game_result(game_data: pd.Series) -> str:
-    if (game_data['team1_score'] in ['', None]) | (game_data['team2_score'] in ['', None]):
-        if game_data['team1'] == game_data['home']:
-            return ' @ '.join([game_data["team2"], game_data["team1"]])
-        elif  game_data['team2'] == game_data['home']:
-            return ' @ '.join([game_data["team1"], game_data["team2"]])
+def format_game_result(game_data: dict) -> str:
+    if ('team1' not in game_data.keys()) | ('team2' not in game_data.keys()):
+        return ''
+    elif (game_data['team1']['_id'] == None) | (game_data['team2']['_id'] == None):
+        return ''
+    elif ('team1_score' not in game_data.keys()) | ('team2_score' not in game_data.keys()):
+        if game_data['team1']['_id'] == game_data['home']['_id']:
+            return ' @ '.join([game_data['team2']['name'], game_data['team1']['name']])
+        elif  game_data['team2']['_id'] == game_data['home']['_id']:
+            return ' @ '.join([game_data['team1']['name'], game_data['team2']['name']])
         else: # No home team specified
-            return ' vs. '.join([game_data["team1"], game_data["team2"]])
+            return ' vs. '.join([game_data['team1']['name'], game_data['team2']['name']])
     elif int(game_data['team2_score']) > int(game_data['team1_score']):
-        return f'{game_data["team2"]} beat {game_data["team1"]} {game_data["team2_score"]}-{game_data["team1_score"]}'
+        return f'{game_data["team2"]["name"]} beat {game_data["team1"]["name"]} {game_data["team2_score"]}-{game_data["team1_score"]}'
     elif int(game_data['team2_score']) < int(game_data['team1_score']):
-        return f'{game_data["team1"]} beat {game_data["team2"]} {game_data["team1_score"]}-{game_data["team2_score"]}'
+        return f'{game_data["team1"]["name"]} beat {game_data["team2"]["name"]} {game_data["team1_score"]}-{game_data["team2_score"]}'
     else:
-        return f'{game_data["team1"]} tied {game_data["team2"]} {game_data["team1_score"]}-{game_data["team2_score"]}'
+        return f'{game_data["team1"]["name"]} tied {game_data["team2"]["name"]} {game_data["team1_score"]}-{game_data["team2_score"]}'
 
-# API
-def events(event_type: str = 'all'):
-    df = pd.concat(
-        [
-            get_df('games').assign(type = 'game'),
-            get_df('practices').assign(type = 'practice')
-        ],
-        ignore_index = True
-    )
-    if event_type in ['game', 'practice']:
-        df = df[df['type'] == event_type]
-    df = df[df['date'].str.contains('2') & df['start'].str.contains('M')]
-    if len(df.index) == 0:
-        return list()
-    df['start'] = pd.to_datetime(df['date'] + df['start'], format = '%m/%d/%Y%I:%M %p')
-    df['end'] = df.apply(lambda row: (row['start'] + timedelta(hours = 3)) if row['type'] == 'game' else pd.to_datetime(row['date'] + row['end'], format = '%m/%d/%Y%I:%M %p'), axis = 1) # Games last 3 hours
-    df['start'] = df['start'].dt.strftime(full_calendar_date_format)
-    df['end'] = df['end'].dt.strftime(full_calendar_date_format)
-    df = df.merge(get_df('fields').rename({'name': 'field'}, axis = 1), how = 'left', on = 'field')
-    df = df.merge(get_df('teams').rename({'name': 'team1'}, axis = 1)[['team1', 'league']], how = 'left', on = 'team1')
-    df['league'] = df.apply(lambda row: row['league_x'] if row['type'] == 'game' else row['league_y'], axis = 1)
-    df.fillna('', inplace = True)
-    df = df.drop(['league_x', 'league_y'], axis = 1).merge(get_df('leagues').rename({'name': 'league'}, axis = 1), how = 'left', on = 'league')
-    if len(df.index) > 0:
-        df['title'] = df.apply(lambda row: format_game_result(row) if row['type'] == 'game' else f'{row["team1"]} Practice' if row['team1'] != '' else 'Open Practice Slot', axis = 1)
-    return df.to_dict(orient = 'records')
-
-def leagues() -> list[dict]:
-    return get_df('leagues').to_dict(orient = 'records')
-
-def teams() -> list[dict]:
-    return get_df('teams').to_dict(orient = 'records')
+def events():
+    games = query.games()
+    practices = query.practices()
+    events = list()
+    for event in (games + practices):
+        event['start'] = event['start'].strftime(full_calendar_date_format)
+        event['end'] = event['end'].strftime(full_calendar_date_format)
+        if event['type'] == 'game':
+            event['title'] = format_game_result(event)
+        elif event['team']['_id'] != None:
+            event['title'] = f'{event["team"]["name"]} Practice'
+        else:
+            event['title'] = 'Open Practice Slot'
+        if 'color' in event['league'].keys():
+            event['backgroundColor'] = event['league']['color']
+        events.append(event)
+    return events
 
 def standings():
-    standings = dict()
-    games_df, leagues_df, teams_df = get_df('games'), get_df('leagues'), get_df('teams')
-    for league_dict in leagues_df.to_dict(orient = 'records'):
-        league = league_dict['name']
-        df = games_df[(games_df['team1_score'] != '') & (games_df['team2_score'] != '') & (games_df['league'] == league)].copy()
-        league_teams_df = teams_df[teams_df['league'] == league]
-        standings_df, wlt = None, ['W', 'L', 'T']
-        if len(df.index) == 0:
-            standings_df = league_teams_df.drop('league', axis = 1)
-            standings_df[wlt] = 0
-            standings_df['winPct'] = '.000'
-        else:
-            df['team1_result'] = df.apply(lambda row: 'T' if row['team1_score'] == row['team2_score'] else 'W' if int(row['team1_score']) > int(row['team2_score']) else 'L', axis = 1)
-            df['team2_result'] = df['team1_result'].apply(lambda x: 'T' if x == 'T' else 'W' if x == 'L' else 'L')
-            away_home_df = pd.concat([
-                df.groupby(side)[f'{side}_result'].value_counts().unstack() for side in ['team1', 'team2']
-            ]).reset_index().rename({'index': 'name'}, axis = 1)
-            for col in wlt:
-                if col not in away_home_df.columns:
-                    away_home_df[col] = 0
-            results_df = away_home_df.groupby('name')[wlt].sum()
-            results_df['winPct'] = results_df.apply(lambda row: '{:.3f}'.format((row['W'] + row['T'] / 2) / row.sum()).lstrip('0'), axis = 1)
-
-            standings_df = league_teams_df.merge(results_df.reset_index(), how = 'left', on = 'name').drop('league', axis = 1).sort_values(by = 'winPct', ascending = False)
-        standings[league] = standings_df.fillna(0).astype({'W': int, 'L': int, 'T': int}).to_dict(orient = 'records')
-    return standings
+    games = query.games()
+    teams = query.teams()
+    leagues = list()
+    for league in query.leagues():
+        league['teams'] = list()
+        for team in filter(lambda team: team['league']['_id'] == league['_id'], teams):
+            team['W'] = 0
+            team['L'] = 0
+            team['T'] = 0
+            team['winPct'] = 0
+            league['teams'].append(team)
+        league_completed_games = filter(lambda game: (game['league']['_id'] == league['_id']) & ('team1_score' in game.keys()) & ('team2_score' in game.keys()), games)
+        for completed_game in league_completed_games:
+            team1_index = next((index for index, d in enumerate(league['teams']) if d['_id'] == completed_game['team1']['_id']), None)
+            team2_index = next((index for index, d in enumerate(league['teams']) if d['_id'] == completed_game['team2']['_id']), None)
+            if completed_game['team1_score'] > completed_game['team2_score']:
+                league['teams'][team1_index]['W'] += 1
+                league['teams'][team2_index]['L'] += 1
+            elif completed_game['team1_score'] < completed_game['team2_score']:
+                league['teams'][team1_index]['L'] += 1
+                league['teams'][team2_index]['W'] += 1
+            else:
+                league['teams'][team1_index]['T'] += 1
+                league['teams'][team2_index]['T'] += 1
+            for team_index in [team1_index, team2_index]:
+                league['teams'][team_index]['winPct'] = (league['teams'][team_index]['W'] + 0.5 * league['teams'][team_index]['T']) / (league['teams'][team_index]['W'] + league['teams'][team_index]['L'] + league['teams'][team_index]['T'])
+        league['teams'] = sorted(league['teams'], key = lambda t: (-t['winPct'], -t['W'], -t['T'], t['L'], t['name']))
+        [team.update({"winPct": '{:.3f}'.format(round(team['winPct'], 3)).replace('0.', '.')}) for team in league['teams']]
+        leagues.append(league)
+    return leagues
 
 # HTML
 @app.route('/schedule', methods = ['GET'])
 def schedule():
-    return render_template('schedule.html', leagues = leagues(), teams = teams(), events = events())
+    return render_template('schedule.html', leagues = query.leagues(), teams = query.teams(), events = events())
 
 @app.route('/roster', methods = ['GET'])
 def roster():
@@ -150,17 +90,16 @@ def rules():
 
 @app.route('/fields', methods = ['GET'])
 def fields():
-    df = get_df('fields')
-    df['link'] = df.apply(lambda row: f'https://www.google.com/maps/place/{row["latitude"]},{row["longitude"]}', axis = 1)
-    fields = df.to_dict(orient = 'records')
+    fields = list()
+    for field in query.fields():
+        field['link'] = f'https://www.google.com/maps/place/{field["latitude"]},{field["longitude"]}'
+        fields.append(field)
     return render_template('fields.html', fields = fields)
 
 @app.route('/sponsors', methods = ['GET'])
 def sponsors():
-    df = get_df('sponsors')
-    sponsors = df.to_dict(orient = 'records')
-    return render_template('sponsors.html', sponsors = sponsors)
+    return render_template('sponsors.html', sponsors = query.sponsors())
 
 @app.route('/', methods = ['GET'])
 def home():
-    return render_template('home.html', leagues = leagues(), events = events(), standings = standings())
+    return render_template('home.html', leagues = query.leagues(), events = events(), standings = standings())
