@@ -2,7 +2,7 @@
 Website for the Fort Worth Men's Senior Baseball League... [view full project description](https://peteb206.github.io/projects/fort-worth-mens-senior-baseball-league-website/)
 
 ## Data Sync
-[![sync-data](https://github.com/peteb206/fwmsbl/actions/workflows/sync-data.yml/badge.svg)]([https://github.com/peteb206/canadians-in-college-baseball/actions/workflows/scrape-stats.yml](https://github.com/peteb206/fwmsbl/actions/workflows/sync-data.yml))
+[![sync-data](https://github.com/peteb206/fwmsbl/actions/workflows/sync-data.yml/badge.svg)](https://github.com/peteb206/fwmsbl/actions/workflows/sync-data.yml)
 
 ## Local Development
 FLASK_APP=app.py FLASK_DEBUG=True flask run
